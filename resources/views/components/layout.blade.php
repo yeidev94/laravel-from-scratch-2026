@@ -1,6 +1,6 @@
 @props([
 'title' => 'Laracast'
-]);
+])
 
 <!DOCTYPE html>
 <html lang="en">

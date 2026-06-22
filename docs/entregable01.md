@@ -65,7 +65,7 @@ laravel-from-scratch-2026/
 | 02 | Set Up Your Development Environment | 7m 27s | Completado *(en Ep. 01)* |
 | 03 | Routing 101 | 5m 26s | Completado |
 | 04 | Layout Files | 16m 10s | Completado |
-| 05 | Pass Data to Views | 5m 36s | Pendiente |
+| 05 | Pass Data to Views | 5m 36s | Completado |
 | 06 | Blade Directives | 7m 39s | Pendiente |
 | 07 | Forms | 19m 43s | Pendiente |
 | 08 | Databases, Migrations, and Eloquent | 23m 59s | Pendiente |
@@ -91,7 +91,7 @@ laravel-from-scratch-2026/
 - [x] Rutas básicas definidas
 - [x] Vistas con Blade
 - [x] Layouts y componentes Blade
-- [ ] Paso de datos desde rutas o controladores hacia vistas
+- [x] Paso de datos desde rutas o controladores hacia vistas
 - [ ] Directivas Blade (`@if`, `@foreach`, `@forelse`, etc.)
 - [ ] Formularios creados y procesados
 - [ ] Tokens CSRF (`@csrf`) en formularios POST
@@ -575,35 +575,70 @@ episodio-04: layouts y componentes Blade con props, slot y merge de clases
 
 ### Resumen
 
-*[Pendiente: pasar datos a vistas, query string con request(), escape automático en Blade.]*
+En este episodio se aprendió a **pasar datos desde la ruta hacia una vista Blade**. El tercer argumento de `Route::view()` acepta un arreglo asociativo cuyas claves se convierten en variables disponibles en la vista (`$greeting`, `$person`).
+
+También se tomó un valor desde el **query string** de la URL con `request('person', 'World')`, donde el segundo parámetro es el **valor por defecto** si `person` no está presente en la petición.
+
+**Escape en Blade:**
+
+| Sintaxis | Comportamiento |
+|----------|----------------|
+| `{{ $person }}` | Escapa HTML automáticamente (equivalente seguro a `echo` con protección XSS) |
+| `{!! $person !!}` | Renderiza sin escapar — solo cuando se confía totalmente en el dato |
+
+En la implementación final se usó `{{ }}` para mostrar el saludo de forma segura.
 
 ### Comandos utilizados
 
 ```bash
-# N/A
+# Probar en el navegador con query string:
+# http://lfts.local/?person=Yeison
+# http://lfts.local/          → person por defecto: World
 ```
 
 ### Archivos modificados o creados
 
-- `routes/web.php`
-- `resources/views/welcome.blade.php`
+**`routes/web.php`**
+
+```php
+Route::view('/', 'welcome', [
+    'greeting' => 'Hello',
+    'person' => request('person', 'World'),
+]);
+```
+
+**`resources/views/welcome.blade.php`**
+
+```blade
+<x-layout title="Home Page">
+    <h1>ISW811 Welcome to Laravel 2026</h1>
+    {{ $greeting }}, {{ $person }}
+</x-layout>
+```
+
+| Variable | Origen | Ejemplo |
+|----------|--------|---------|
+| `$greeting` | Valor fijo en la ruta | `Hello` |
+| `$person` | Query string `?person=` o default | `Yeison` o `World` |
 
 ### Evidencia
 
-![Episodio 05 — datos en vistas](./img/ep05-pass-data.png)
+![Paso de datos y query string a la vista welcome](./img/ep05-pass-data-views.png)
+
+**Resultado obtenido:** con la URL `http://lfts.local/?person=Yeison`, la página muestra **"Hello, Yeison"**. Sin query string, `request('person', 'World')` devuelve **World** por defecto.
 
 ### Problemas y soluciones
 
-*[Pendiente]*
+No se presentaron errores.
 
 ### Comentarios personales
 
-*[Pendiente]*
+Blade escapa por defecto con `{{ }}`, lo que reduce el riesgo de inyección XSS frente a un `echo` directo en PHP. `{!! !!}` existe para HTML confiable (por ejemplo contenido generado por el propio sistema), pero no debe usarse con datos que vienen del usuario sin sanitizar.
 
 ### Commit Git
 
 ```
-episodio-05: paso de datos y query string a vistas
+episodio-05: paso de datos y query string a vistas Blade
 ```
 
 ---

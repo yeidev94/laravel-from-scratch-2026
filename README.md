@@ -137,7 +137,8 @@ sudo chmod -R 775 storage bootstrap/cache
 | 02 | Set Up Your Development Environment | Completado *(en Ep. 01)* |
 | 03 | Routing 101 | Completado |
 | 04 | Layout Files | Completado |
-| 05–16 | Pendientes | — |
+| 05 | Pass Data to Views | Completado |
+| 06–16 | Pendientes | — |
 
 ### Episodio 01 — Proyecto Laravel funcional
 
@@ -179,6 +180,16 @@ Todas las vistas usan `<x-layout>`; `contact` además usa `<x-card class="max-w-
 ![Layout y slot](docs/img/ep04-layout-slot.png)
 
 ![Props, card y merge de clases](docs/img/ep04-layout-card-merge.png)
+
+### Episodio 05 — Pass Data to Views
+
+Variables `greeting` y `person` pasadas desde `Route::view()`; `person` leída del query string con valor por defecto `World`.
+
+```
+http://lfts.local/?person=Yeison  →  Hello, Yeison
+```
+
+![Pass data to views](docs/img/ep05-pass-data-views.png)
 
 ---
 

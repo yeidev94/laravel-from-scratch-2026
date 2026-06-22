@@ -13,8 +13,10 @@
 | `evidencia-pagina-inicial.png` | 01 | **Obligatoria** — página inicial del proyecto |
 | `ep03-about.png` | 03 | Vista `about.blade.php` en `/about` |
 | `ep03-contact.png` | 03 | Vista `contact.blade.php` en `/contact` |
+| `evidencia-rutas.png` | 03 | **Obligatoria** — rutas about/contact |
 | `ep04-layout-slot.png` | 04 (p.1) | Layout, `$slot` y `<x-layout>` |
 | `ep04-layout-card-merge.png` | 04 (p.2) | Props, `x-card` y `$attributes->merge()` |
+| `ep05-pass-data-views.png` | 05 | Query string, `{{ }}` vs `{!! !!}`, defaults |
 
 ## Pendientes (evidencias obligatorias del entregable)
 
