@@ -17,6 +17,9 @@
 | `ep04-layout-slot.png` | 04 (p.1) | Layout, `$slot` y `<x-layout>` |
 | `ep04-layout-card-merge.png` | 04 (p.2) | Props, `x-card` y `$attributes->merge()` |
 | `ep05-pass-data-views.png` | 05 | Query string, `{{ }}` vs `{!! !!}`, defaults |
+| `ep06-dump-tasks.png` | 06 | `@dump($tasks)` |
+| `ep06-unless-empty.png` | 06 | `@unless` con arreglo vacío |
+| `ep06-foreach-forelse.png` | 06 | `@if`, `@foreach`, `@forelse` |
 
 ## Pendientes (evidencias obligatorias del entregable)
 

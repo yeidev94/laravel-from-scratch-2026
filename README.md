@@ -138,7 +138,8 @@ sudo chmod -R 775 storage bootstrap/cache
 | 03 | Routing 101 | Completado |
 | 04 | Layout Files | Completado |
 | 05 | Pass Data to Views | Completado |
-| 06–16 | Pendientes | — |
+| 06 | Blade Directives | Completado |
+| 07–16 | Pendientes | — |
 
 ### Episodio 01 — Proyecto Laravel funcional
 
@@ -190,6 +191,16 @@ http://lfts.local/?person=Yeison  →  Hello, Yeison
 ```
 
 ![Pass data to views](docs/img/ep05-pass-data-views.png)
+
+### Episodio 06 — Blade Directives
+
+Arreglo `$tasks` pasado desde la ruta; directivas `@dump`, `@if`, `@foreach`, `@unless` y `@forelse`.
+
+![Dump tasks](docs/img/ep06-dump-tasks.png)
+
+![Unless empty](docs/img/ep06-unless-empty.png)
+
+![Foreach y forelse](docs/img/ep06-foreach-forelse.png)
 
 ---
 

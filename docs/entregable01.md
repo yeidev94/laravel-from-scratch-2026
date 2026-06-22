@@ -66,7 +66,7 @@ laravel-from-scratch-2026/
 | 03 | Routing 101 | 5m 26s | Completado |
 | 04 | Layout Files | 16m 10s | Completado |
 | 05 | Pass Data to Views | 5m 36s | Completado |
-| 06 | Blade Directives | 7m 39s | Pendiente |
+| 06 | Blade Directives | 7m 39s | Completado |
 | 07 | Forms | 19m 43s | Pendiente |
 | 08 | Databases, Migrations, and Eloquent | 23m 59s | Pendiente |
 | 09 | HTTP Requests and REST | 24m 49s | Pendiente |
@@ -92,7 +92,7 @@ laravel-from-scratch-2026/
 - [x] Vistas con Blade
 - [x] Layouts y componentes Blade
 - [x] Paso de datos desde rutas o controladores hacia vistas
-- [ ] Directivas Blade (`@if`, `@foreach`, `@forelse`, etc.)
+- [x] Directivas Blade (`@if`, `@foreach`, `@forelse`, etc.)
 - [ ] Formularios creados y procesados
 - [ ] Tokens CSRF (`@csrf`) en formularios POST
 - [ ] Migraciones creadas y ejecutadas
@@ -647,34 +647,95 @@ episodio-05: paso de datos y query string a vistas Blade
 
 ### Resumen
 
-*[Pendiente: @dump, @dd, @if, @foreach, @forelse.]*
+En este episodio se exploraron las **directivas Blade** para depuración y control de flujo. Se pasó un arreglo `$tasks` desde la ruta hacia `welcome.blade.php` y se practicó con varias directivas para inspeccionar y renderizar ese arreglo según tenga o no elementos.
+
+**Directivas utilizadas:**
+
+| Directiva | Propósito |
+|-----------|-----------|
+| `@dump($tasks)` | Depurar variables en pantalla (formato legible) |
+| `@if (count($tasks))` … `@endif` | Ejecutar markup solo si hay tareas |
+| `@foreach ($tasks as $task)` … `@endforeach` | Iterar cada elemento del arreglo |
+| `@unless (count($tasks))` … `@endunless` | Inverso de `@if` — solo si el arreglo está vacío |
+| `@forelse ($tasks as $task)` … `@empty` … `@endforelse` | Bucle + mensaje alternativo si está vacío |
+
+Se cambió la ruta `/` de `Route::view()` a `Route::get()` con closure para pasar el arreglo `tasks` junto con `greeting` y `person`.
 
 ### Comandos utilizados
 
 ```bash
-# N/A
+# Ver resultado en el navegador:
+# http://lfts.local/
 ```
 
 ### Archivos modificados o creados
 
-- `resources/views/*.blade.php`
+**`routes/web.php`**
+
+```php
+Route::get('/', function () {
+    return view('welcome', [
+        'tasks' => ['task 1', 'task 2', 'task 3'],
+        'greeting' => 'Hello World',
+        'person' => 'Yeison',
+    ]);
+});
+```
+
+**`resources/views/welcome.blade.php`** (fragmento principal):
+
+```blade
+@dump($tasks)
+
+@if (count($tasks))
+    <p>Yes we have tasks. How Many? <?= count($tasks) ?> tasks, in fact</p>
+@endif
+
+@foreach ($tasks as $task)
+    <li>{{ $task }}</li>
+@endforeach
+
+@unless (count($tasks))
+    <p> there are no active tasks </p>
+@endunless
+
+@forelse ($tasks as $task)
+    <li>{{ $task }}</li>
+@empty
+    <p> there are no active tasks </p>
+@endforelse
+```
 
 ### Evidencia
 
-![Episodio 06 — directivas Blade](./img/ep06-blade-directives.png)
+**1. `@dump($tasks)` — inspección del arreglo**
+
+![Dump del arreglo tasks](./img/ep06-dump-tasks.png)
+
+**2. Arreglo vacío — `@unless` muestra mensaje alternativo**
+
+![Directiva unless con arreglo vacío](./img/ep06-unless-empty.png)
+
+Con `'tasks' => []` en la ruta, `@if` y `@foreach` no renderizan contenido; `@unless` muestra *"there are no active tasks"*.
+
+**3. Arreglo con tareas — `@if`, `@foreach` y `@forelse`**
+
+![If, foreach y forelse con tres tareas](./img/ep06-foreach-forelse.png)
+
+Con tres tareas, `@dump` muestra `array:3`, `@if` confirma *"Yes we have tasks. How Many? 3 tasks, in fact"*, y ambos bucles listan task 1, task 2 y task 3.
 
 ### Problemas y soluciones
 
-*[Pendiente]*
+No se presentaron errores. Se probó el mismo template con arreglo vacío y con elementos para ver el comportamiento de `@unless` y `@forelse @empty`.
 
 ### Comentarios personales
 
-*[Pendiente]*
+`@dump` es útil durante desarrollo para ver la estructura exacta de una variable. `@forelse` combina `@foreach` y el caso vacío en una sola directiva, evitando un `@if` extra. `@unless` es equivalente a `@if (!condición)` y hace el template más legible cuando la lógica es negativa.
 
 ### Commit Git
 
 ```
-episodio-06: directivas Blade para control de flujo
+episodio-06: directivas Blade dump, if, foreach, unless y forelse
 ```
 
 ---
