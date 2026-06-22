@@ -67,7 +67,7 @@ laravel-from-scratch-2026/
 | 04 | Layout Files | 16m 10s | Completado |
 | 05 | Pass Data to Views | 5m 36s | Completado |
 | 06 | Blade Directives | 7m 39s | Completado |
-| 07 | Forms | 19m 43s | Pendiente |
+| 07 | Forms | 19m 43s | Completado |
 | 08 | Databases, Migrations, and Eloquent | 23m 59s | Pendiente |
 | 09 | HTTP Requests and REST | 24m 49s | Pendiente |
 | 10 | Controllers | 8m 51s | Pendiente |
@@ -93,8 +93,8 @@ laravel-from-scratch-2026/
 - [x] Layouts y componentes Blade
 - [x] Paso de datos desde rutas o controladores hacia vistas
 - [x] Directivas Blade (`@if`, `@foreach`, `@forelse`, etc.)
-- [ ] Formularios creados y procesados
-- [ ] Tokens CSRF (`@csrf`) en formularios POST
+- [x] Formularios creados y procesados
+- [x] Tokens CSRF (`@csrf`) en formularios POST
 - [ ] Migraciones creadas y ejecutadas
 - [ ] Modelos Eloquent
 - [ ] Operaciones CRUD básicas (crear, leer, editar, actualizar, eliminar)
@@ -145,6 +145,11 @@ Estas capturas son requisito de evaluación (10 pts). Guardarlas en `docs/img/` 
 
 ![Layout slot](./img/ep04-layout-slot.png)
 ![Card merge](./img/ep04-layout-card-merge.png)
+
+**Episodio 07 — Forms**
+
+![Formulario](./img/ep07-form-post-csrf.png)
+![Session ideas](./img/ep07-session-ideas.png)
 
 ### Galería de evidencias obligatorias — pendientes
 
@@ -744,35 +749,131 @@ episodio-06: directivas Blade dump, if, foreach, unless y forelse
 
 ### Resumen
 
-*[Pendiente: formulario POST, token @csrf, guardar ideas en sesión, redirect.]*
+En este episodio se creó un **formulario POST** para capturar ideas, se aplicó **Tailwind CSS** al textarea y al botón, y se guardaron las ideas en la **sesión** de Laravel (almacenamiento temporal del servidor, no persistente en base de datos).
+
+Flujo completo:
+
+1. **GET `/`** — carga ideas desde sesión y muestra `ideas.blade.php`
+2. **POST `/ideas`** — recibe el campo `idea`, lo agrega a la sesión y redirige
+3. **GET `/delete-ideas`** — ruta temporal para vaciar la sesión con `session()->forget('ideas')`
+
+### Tailwind CSS
+
+Se integró Tailwind en `layout.blade.php` vía CDN:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+```
+
+El formulario usa clases utilitarias (`bg-white/5`, `rounded-md`, `bg-indigo-500`, etc.) para el textarea y el botón **Save**.
+
+### Formulario POST y `@csrf`
+
+**`resources/views/ideas.blade.php`**
+
+```blade
+<form method="POST" action="/ideas">
+    @csrf
+    <textarea name="idea" id="idea" rows="3" class="..."></textarea>
+    <button type="submit" class="...">Save</button>
+</form>
+```
+
+| Atributo | Función |
+|----------|---------|
+| `method="POST"` | Envía datos al servidor (no visibles en la URL) |
+| `action="/ideas"` | URI del endpoint que procesa el formulario |
+| `@csrf` | Genera un token oculto `_token` en el formulario |
+
+**¿Cómo funciona `@csrf`?** Laravel incluye un token único por sesión. Al enviar el POST, el framework verifica que el token coincida. Si falta o es inválido, rechaza la petición. Esto mitiga **CSRF** (Cross-Site Request Forgery): un sitio externo no puede enviar formularios en nombre del usuario sin conocer ese token.
+
+### Session storage — guardar, cargar y eliminar
+
+**Guardar idea (POST `/ideas`):**
+
+```php
+Route::post('/ideas', function () {
+    $idea = request('idea');
+    session()->push('ideas', $idea);
+    return redirect('/');
+});
+```
+
+**Cargar ideas (GET `/`):**
+
+```php
+Route::get('/', function () {
+    $ideas = session()->get('ideas', []);
+    return view('ideas', ['ideas' => $ideas]);
+});
+```
+
+**Eliminar sesión (temporal — GET `/delete-ideas`):**
+
+```php
+Route::get('/delete-ideas', function () {
+    session()->forget('ideas');
+    return redirect('/');
+});
+```
+
+**Mostrar en la vista:**
+
+```blade
+@if (count($ideas))
+    <h2>Your Ideas</h2>
+    @foreach ($ideas as $idea)
+        <li>{{ $idea }}</li>
+    @endforeach
+@endif
+```
+
+> **Nota:** Los datos en sesión se pierden al expirar la sesión o al llamar `forget()`. En el Episodio 08 se migrará a base de datos con Eloquent.
 
 ### Comandos utilizados
 
 ```bash
-# N/A
+npm run dev   # si se usa Vite además del CDN de Tailwind
 ```
 
 ### Archivos modificados o creados
 
-- `routes/web.php`
-- `resources/views/welcome.blade.php` *(o vista del cuaderno de ideas)*
+| Archivo | Cambio |
+|---------|--------|
+| `resources/views/ideas.blade.php` | Formulario POST, `@csrf`, listado de ideas |
+| `resources/views/components/layout.blade.php` | Tailwind CDN, fondo `bg-gray-700` |
+| `routes/web.php` | GET `/`, POST `/ideas`, GET `/delete-ideas` |
 
 ### Evidencia
 
-![Episodio 07 — formulario](./img/ep07-forms.png)
+**1. Formulario POST + `@csrf` — primera prueba con `dd("Hello!")`**
+
+![Formulario POST y respuesta dd](./img/ep07-form-post-csrf.png)
+
+**2. Idea guardada en sesión y listada ("test laravel")**
+
+![Session push y listado de ideas](./img/ep07-session-ideas.png)
+
+**3. Eliminación de ideas con `/delete-ideas`**
+
+![Session forget y redirect](./img/ep07-session-delete.png)
+
+**Evidencia obligatoria — formulario funcional**
+
+![Formulario funcional](./img/evidencia-formulario.png)
 
 ### Problemas y soluciones
 
-*[Pendiente]*
+No se presentaron errores. La primera prueba usó `dd("Hello!")` en la ruta POST para confirmar que el formulario llegaba al endpoint; luego se reemplazó por la lógica de sesión.
 
 ### Comentarios personales
 
-*[Pendiente: diferencia entre datos en sesión vs base de datos.]*
+La sesión es útil para prototipos rápidos, pero no sustituye una base de datos: al cerrar el navegador o limpiar la sesión, las ideas desaparecen. El patrón **POST → redirect → GET** (PRG) evita reenvíos accidentales del formulario al refrescar la página.
 
 ### Commit Git
 
 ```
-episodio-07: formularios POST y almacenamiento en sesión
+episodio-07: formulario POST, CSRF y ideas en session storage
 ```
 
 ---

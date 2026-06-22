@@ -20,6 +20,10 @@
 | `ep06-dump-tasks.png` | 06 | `@dump($tasks)` |
 | `ep06-unless-empty.png` | 06 | `@unless` con arreglo vacío |
 | `ep06-foreach-forelse.png` | 06 | `@if`, `@foreach`, `@forelse` |
+| `ep07-form-post-csrf.png` | 07 | Formulario POST y `@csrf` |
+| `ep07-session-ideas.png` | 07 | `session()->push` y listado |
+| `ep07-session-delete.png` | 07 | `session()->forget('ideas')` |
+| `evidencia-formulario.png` | 07 | **Obligatoria** — formulario funcional |
 
 ## Pendientes (evidencias obligatorias del entregable)
 

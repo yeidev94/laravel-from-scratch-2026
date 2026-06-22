@@ -139,7 +139,8 @@ sudo chmod -R 775 storage bootstrap/cache
 | 04 | Layout Files | Completado |
 | 05 | Pass Data to Views | Completado |
 | 06 | Blade Directives | Completado |
-| 07–16 | Pendientes | — |
+| 07 | Forms | Completado |
+| 08–16 | Pendientes | — |
 
 ### Episodio 01 — Proyecto Laravel funcional
 
@@ -201,6 +202,16 @@ Arreglo `$tasks` pasado desde la ruta; directivas `@dump`, `@if`, `@foreach`, `@
 ![Unless empty](docs/img/ep06-unless-empty.png)
 
 ![Foreach y forelse](docs/img/ep06-foreach-forelse.png)
+
+### Episodio 07 — Forms
+
+Formulario POST `/ideas` con `@csrf`, Tailwind CSS e ideas en session storage.
+
+![Form POST CSRF](docs/img/ep07-form-post-csrf.png)
+
+![Ideas en sesión](docs/img/ep07-session-ideas.png)
+
+![Eliminar sesión](docs/img/ep07-session-delete.png)
 
 ---
 
