@@ -1,39 +1,46 @@
-# Carpeta de evidencias — Entregable 01
+# Carpeta de evidencias — Proyecto 1 ISW811
 
-> **Ubicación:** `C:\Users\yeide\isw811\VMs\webserver\sites\laravel-from-scratch-2026\docs\img`  
-> En la VM: `~/sites/laravel-from-scratch-2026/docs/img`
+> **Ruta host:** `C:\Users\yeide\isw811\VMs\webserver\sites\laravel-from-scratch-2026\docs\img`  
+> **Ruta VM:** `~/sites/laravel-from-scratch-2026/docs/img`
 
-Capturas requeridas por la UTN (además de las por episodio `epXX-*.png`).
+## Imágenes guardadas (avance actual)
 
-## Capturas obligatorias para evaluación
+| Archivo | Episodio | Descripción |
+|---------|----------|-------------|
+| `ep01-estructura-laravel.png` | 01 | `ls -la` — estructura Laravel en la VM |
+| `ep01-lfts-navegador.png` | 01 | Página de bienvenida en `http://lfts.local` |
+| `ep01-welcome-personalizado.png` | 01 | Edición `welcome.blade.php` + navegador ("Yeison") |
+| `evidencia-pagina-inicial.png` | 01 | **Obligatoria** — página inicial del proyecto |
+| `ep03-about.png` | 03 | Vista `about.blade.php` en `/about` |
+| `ep03-contact.png` | 03 | Vista `contact.blade.php` en `/contact` |
+| `ep04-layout-slot.png` | 04 (p.1) | Layout, `$slot` y `<x-layout>` |
+| `ep04-layout-card-merge.png` | 04 (p.2) | Props, `x-card` y `$attributes->merge()` |
 
-| Archivo | Qué debe mostrar |
-|---------|------------------|
-| `evidencia-pagina-inicial.png` | Página de inicio del proyecto Laravel |
-| `evidencia-rutas.png` | Rutas creadas (`php artisan route:list` o navegación) |
-| `evidencia-formulario.png` | Formulario funcional (crear idea) |
-| `evidencia-listado-bd.png` | Listado de ideas persistidas en base de datos |
-| `evidencia-crear.png` | Creación exitosa de un registro |
-| `evidencia-editar.png` | Formulario o vista de edición |
-| `evidencia-actualizar.png` | Registro actualizado |
-| `evidencia-eliminar.png` | Eliminación de registro |
-| `evidencia-validacion.png` | Mensajes de validación visibles |
-| `evidencia-registro.png` | Pantalla de registro de usuario |
-| `evidencia-login.png` | Pantalla de inicio de sesión |
-| `evidencia-logout.png` | Cierre de sesión (nav sin usuario autenticado) |
+## Pendientes (evidencias obligatorias del entregable)
 
-## Capturas por episodio (documentación)
-
-```
-ep01-welcome.png
-ep02-setup.png
-ep03-routing.png
-...
-ep16-relationships.png
-```
+| Archivo | Episodio |
+|---------|----------|
+| `evidencia-formulario.png` | 07 |
+| `evidencia-listado-bd.png` | 08 |
+| `evidencia-crear.png` | 09–10 |
+| `evidencia-editar.png` | 09 |
+| `evidencia-actualizar.png` | 09 |
+| `evidencia-eliminar.png` | 09 |
+| `evidencia-validacion.png` | 11–12 |
+| `evidencia-registro.png` | 14 |
+| `evidencia-login.png` | 14 |
+| `evidencia-logout.png` | 14–15 |
 
 ## Sintaxis en Markdown
 
+Desde `docs/entregable01.md`:
+
 ```markdown
-![Descripción](./img/evidencia-listado-bd.png)
+![Descripción](./img/ep03-about.png)
+```
+
+Desde `README.md` en la raíz:
+
+```markdown
+![Descripción](docs/img/ep03-about.png)
 ```

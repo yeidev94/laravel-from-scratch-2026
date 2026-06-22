@@ -5,32 +5,73 @@
 | **Estudiante** | Yeison Roberto Hernandez Garita |
 | **Curso** | ISW811 — Aplicaciones Web con Software Libre |
 | **Docente** | Misael Matamoros Soto |
+| **Curso Laracasts** | [Laravel From Scratch (2026 Edition)](https://laracasts.com/series/laravel-from-scratch-2026) |
+| **Entregable actual** | 01 — Episodios 1 al 16 |
+| **Fecha límite Entregable 01** | 22 de junio de 2026, 23:59 |
+
+---
+
+## Descripción
+
+Proyecto del curso **Laravel From Scratch 2026**. El código Laravel y la documentación técnica (Markdown + capturas) viven en esta misma carpeta, versionados con Git.
+
+Documentación detallada por episodio: **[docs/entregable01.md](docs/entregable01.md)**
+
+---
+
+## Ambiente de desarrollo
+
+| Componente | Detalle |
+|------------|---------|
+| **Host** | Windows 10 |
+| **VM** | Debian 12 (Bookworm) — Vagrant + VirtualBox |
+| **Vagrant** | `C:\Users\yeide\isw811\VMs\webserver` |
+| **Carpeta compartida (host)** | `C:\Users\yeide\isw811\VMs\webserver\sites` |
+| **Carpeta compartida (VM)** | `~/sites` |
+| **Proyecto (host)** | `C:\Users\yeide\isw811\VMs\webserver\sites\laravel-from-scratch-2026` |
+| **Proyecto (VM)** | `~/sites/laravel-from-scratch-2026` |
+| **Base de datos** | `larabase` / usuario `larauser` |
+| **Dominio local** | `http://lfts.local` |
+| **IP VM** | `192.168.33.10` |
+
+> El Workshop 03 dejó configurado `larasite.local` en la misma VM. No hay conflicto: Apache enruta por `ServerName` (`lfts.local` vs `larasite.local`).
+
+---
 
 ## Estructura del proyecto
 
-Código Laravel y documentación del curso están en **la misma carpeta**:
-
-| Sistema | Ruta |
-|---------|------|
-| **Windows (host)** | `C:\Users\yeide\isw811\VMs\webserver\sites\laravel-from-scratch-2026` |
-| **Debian (VM)** | `~/sites/laravel-from-scratch-2026` |
-
 ```
 laravel-from-scratch-2026/
-├── app/, routes/, resources/, ...   ← código Laravel
+├── app/
+├── bootstrap/
+├── config/
+├── database/
 ├── docs/
-│   ├── entregable01.md              ← episodios 1–16
+│   ├── entregable01.md       # Episodios 1–16
 │   ├── entregable02.md
 │   ├── entregable03.md
-│   └── img/                         ← capturas de pantalla
+│   └── img/                  # Capturas de pantalla
+├── apache-conf/
+│   └── lfts.local.conf       # Virtual host Apache
+├── public/
+├── resources/
+│   └── views/
+│       ├── welcome.blade.php
+│       ├── about.blade.php
+│       └── contact.blade.php
+├── routes/
+│   └── web.php
+├── tests/
 ├── .git/
+├── artisan
 ├── composer.json
-└── README.md                        ← este archivo
+├── package.json
+└── README.md
 ```
 
-Documentación detallada: [docs/README.md](docs/README.md)
+---
 
-## Instalación local (después de descomprimir)
+## Instalación y ejecución
 
 Desde la VM (`vagrant ssh`):
 
@@ -54,68 +95,103 @@ DB_USERNAME=larauser
 DB_PASSWORD=secret
 ```
 
-Ejecutar:
-
 ```bash
 php artisan migrate
-npm run dev          # terminal 1 — assets con Vite
+npm run dev    # terminal 1 — Vite (opcional en desarrollo)
 ```
 
-## Publicación con Apache (virtual host)
-
-Dominio local del proyecto: **`lfts.local`**
-
-Archivo de configuración incluido en el repositorio:
-
-```
-apache-conf/lfts.local.conf
-```
-
-### En la VM (Debian)
+### Apache — virtual host `lfts.local`
 
 ```bash
-# Copiar el virtual host
 sudo cp ~/sites/laravel-from-scratch-2026/apache-conf/lfts.local.conf \
   /etc/apache2/sites-available/lfts.local.conf
-
-# Habilitar sitio y módulo rewrite
 sudo a2ensite lfts.local.conf
 sudo a2enmod rewrite
-
-# Verificar sintaxis y reiniciar Apache
 sudo apache2ctl configtest
 sudo systemctl restart apache2
-sudo systemctl status apache2
-
-# Probar desde la VM
-curl -I -H "Host: lfts.local" http://127.0.0.1
 ```
 
-> **Ruta DocumentRoot:** `/vagrant/sites/laravel-from-scratch-2026/public` — equivalente a `~/sites/laravel-from-scratch-2026/public` en la carpeta compartida.
-
-### En Windows (archivo hosts)
-
-Agregar en `C:\Windows\System32\drivers\etc\hosts` (como administrador):
+**Archivo `hosts` en Windows** (`C:\Windows\System32\drivers\etc\hosts`):
 
 ```
 192.168.33.10 lfts.local
 ```
 
-IP de la VM según `Vagrantfile`: `192.168.33.10`
+Acceso: **http://lfts.local**
 
-### Acceso desde el navegador
-
-```
-http://lfts.local
-```
-
-### Permisos Laravel (si aparece error 500)
+### Permisos (si aparece error 500)
 
 ```bash
 cd ~/sites/laravel-from-scratch-2026
 sudo chown -R www-data:www-data storage bootstrap/cache
 sudo chmod -R 775 storage bootstrap/cache
 ```
+
+---
+
+## Avance del curso — Entregable 01
+
+| # | Episodio | Estado |
+|---|----------|--------|
+| 01 | Welcome Aboard + creación del proyecto | Completado |
+| 02 | Set Up Your Development Environment | Completado *(en Ep. 01)* |
+| 03 | Routing 101 | Completado |
+| 04 | Layout Files | Completado |
+| 05–16 | Pendientes | — |
+
+### Episodio 01 — Proyecto Laravel funcional
+
+- Proyecto creado con `laravel new` en `~/sites/laravel-from-scratch-2026`
+- Virtual host Apache `lfts.local` configurado
+- Primera prueba editando `welcome.blade.php`
+
+![Estructura del proyecto en la VM](docs/img/ep01-estructura-laravel.png)
+
+![Página inicial en lfts.local](docs/img/evidencia-pagina-inicial.png)
+
+![Personalización de welcome.blade.php](docs/img/ep01-welcome-personalizado.png)
+
+### Episodio 03 — Routing 101
+
+Rutas definidas en `routes/web.php` con `Route::get()` y callback que devuelve `view()`:
+
+| Ruta | Vista |
+|------|-------|
+| `/` | `resources/views/welcome.blade.php` |
+| `/about` | `resources/views/about.blade.php` |
+| `/contact` | `resources/views/contact.blade.php` |
+
+![Página About](docs/img/ep03-about.png)
+
+![Página Contact](docs/img/ep03-contact.png)
+
+![Evidencia rutas — entregable](docs/img/evidencia-rutas.png)
+
+### Episodio 04 — Layout Files
+
+Componentes reutilizables en `resources/views/components/`:
+
+- **`layout.blade.php`** — `@props(['title' => 'Laracast'])`, nav, `{{ $slot }}`
+- **`card.blade.php`** — `{{ $attributes->merge(['class' => 'card']) }}`
+
+Todas las vistas usan `<x-layout>`; `contact` además usa `<x-card class="max-w-400">`.
+
+![Layout y slot](docs/img/ep04-layout-slot.png)
+
+![Props, card y merge de clases](docs/img/ep04-layout-card-merge.png)
+
+---
+
+## Control de versiones
+
+Mínimo **un commit por episodio**. Historial sugerido:
+
+```
+episodio-01: creación del proyecto Laravel en Vagrant
+episodio-03: rutas GET para welcome, about y contact
+```
+
+---
 
 ## Empaquetado del entregable
 
@@ -127,63 +203,20 @@ tar cvfz ISW811_Proyecto1_Entregable01_HernandezGaritaYeison.tar.gz \
   laravel-from-scratch-2026/
 ```
 
+**No incluir** `vendor/` ni `node_modules/` — deben reinstalarse con `composer install` y `npm install`.
+
 ---
 
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Índice de capturas (`docs/img/`)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+| Archivo | Descripción |
+|---------|-------------|
+| `ep01-estructura-laravel.png` | `ls -la` del proyecto en la VM |
+| `ep01-lfts-navegador.png` | Laravel en `http://lfts.local` |
+| `ep01-welcome-personalizado.png` | Edición de welcome en VS Code + navegador |
+| `evidencia-pagina-inicial.png` | Evidencia obligatoria — página inicial |
+| `ep03-about.png` | Ruta `/about` |
+| `ep03-contact.png` | Ruta `/contact` |
+| `evidencia-rutas.png` | Evidencia obligatoria — rutas creadas |
 
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
-```
-
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Más capturas se irán agregando en los episodios siguientes. Ver [docs/img/README.md](docs/img/README.md).

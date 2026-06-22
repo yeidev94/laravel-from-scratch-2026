@@ -64,7 +64,7 @@ laravel-from-scratch-2026/
 | 01 | Welcome Aboard | 34s | Completado |
 | 02 | Set Up Your Development Environment | 7m 27s | Completado *(en Ep. 01)* |
 | 03 | Routing 101 | 5m 26s | Completado |
-| 04 | Layout Files | 16m 10s | Pendiente |
+| 04 | Layout Files | 16m 10s | Completado |
 | 05 | Pass Data to Views | 5m 36s | Pendiente |
 | 06 | Blade Directives | 7m 39s | Pendiente |
 | 07 | Forms | 19m 43s | Pendiente |
@@ -89,8 +89,8 @@ laravel-from-scratch-2026/
 
 - [x] Proyecto Laravel funcional creado y ejecutándose
 - [x] Rutas básicas definidas
-- [ ] Vistas con Blade
-- [ ] Layouts y componentes Blade
+- [x] Vistas con Blade
+- [x] Layouts y componentes Blade
 - [ ] Paso de datos desde rutas o controladores hacia vistas
 - [ ] Directivas Blade (`@if`, `@foreach`, `@forelse`, etc.)
 - [ ] Formularios creados y procesados
@@ -127,10 +127,27 @@ Estas capturas son requisito de evaluación (10 pts). Guardarlas en `docs/img/` 
 | Pantalla de inicio de sesión | `evidencia-login.png` | 14 |
 | Cierre de sesión (logout) | `evidencia-logout.png` | 14–15 |
 
-### Galería de evidencias obligatorias
+### Galería de evidencias — avance actual (Ep. 01 y 03)
 
-![Página inicial](./img/evidencia-pagina-inicial.png)
-![Rutas creadas](./img/evidencia-rutas.png)
+**Episodio 01 — proyecto y Apache**
+
+![Estructura del proyecto](./img/ep01-estructura-laravel.png)
+![Página inicial lfts.local](./img/evidencia-pagina-inicial.png)
+![Welcome personalizado](./img/ep01-welcome-personalizado.png)
+
+**Episodio 03 — Routing 101**
+
+![About](./img/ep03-about.png)
+![Contact](./img/ep03-contact.png)
+![Evidencia rutas obligatoria](./img/evidencia-rutas.png)
+
+**Episodio 04 — Layout Files**
+
+![Layout slot](./img/ep04-layout-slot.png)
+![Card merge](./img/ep04-layout-card-merge.png)
+
+### Galería de evidencias obligatorias — pendientes
+
 ![Formulario funcional](./img/evidencia-formulario.png)
 ![Listado en base de datos](./img/evidencia-listado-bd.png)
 ![Validaciones](./img/evidencia-validacion.png)
@@ -445,37 +462,111 @@ episodio-03: rutas GET para welcome, about y contact
 
 ### Resumen
 
-*[Pendiente: layout Blade reutilizable, $slot, props de título, $attributes->merge().]*
+En este episodio se aprendió a extraer markup repetido en **componentes Blade reutilizables** dentro de `resources/views/components/`. Los archivos en esa carpeta se invocan con la sintaxis `<x-nombre>` (por ejemplo `<x-layout>`, `<x-card>`).
+
+**Conceptos clave:**
+
+| Concepto | Uso |
+|----------|-----|
+| **`{{ $slot }}`** | Contenido único que cada vista pasa al componente |
+| **`@props`** | Datos dinámicos declarados en el componente, con valores por defecto |
+| **Props vs atributos** | Lo definido explícitamente en `@props` (ej. `title`) es una prop; lo demás son atributos HTML |
+| **`$attributes->merge()`** | Combina clases/atributos del componente con los que pasa la vista (override local) |
+
+**Parte 1:** Se creó `layout.blade.php` con navegación compartida y `{{ $slot }}` para el contenido de cada página.
+
+**Parte 2:** Se añadió la prop `title` con valor por defecto `'Laracast'`, estilos `.card` y `.max-w-400` en el layout, el componente `card.blade.php` con `$attributes->merge(['class' => 'card'])`, y se aplicó `<x-layout>` en `welcome`, `about` y `contact`.
 
 ### Comandos utilizados
 
 ```bash
-# Sin comandos artisan obligatorios
+# Sin comandos artisan — componentes y vistas Blade
 ```
 
 ### Archivos modificados o creados
 
-- `resources/views/components/layout.blade.php`
-- `resources/views/about.blade.php`
-- `resources/views/contact.blade.php`
-- `routes/web.php`
+**`resources/views/components/layout.blade.php`**
+
+```blade
+@props(['title' => 'Laracast'])
+
+<title>{{ $title }}</title>
+{{-- nav + estilos .card, .max-w-400 --}}
+<main>{{ $slot }}</main>
+```
+
+**`resources/views/components/card.blade.php`**
+
+```blade
+<div {{ $attributes->merge(['class' => 'card']) }}>
+    {{ $slot }}
+</div>
+```
+
+**Vistas que consumen los componentes:**
+
+```blade
+{{-- welcome.blade.php --}}
+<x-layout title="Home Page">
+    <h1>ISW811 Welcome to Laravel 2026</h1>
+</x-layout>
+
+{{-- about.blade.php --}}
+<x-layout title="About">
+    <h1>ABOUT US</h1>
+</x-layout>
+
+{{-- contact.blade.php --}}
+<x-layout title="Contact">
+    <h1>Contact Us</h1>
+    <x-card class="max-w-400">
+        <p>Placeholder for the contact page</p>
+    </x-card>
+</x-layout>
+```
+
+| Archivo | Rol |
+|---------|-----|
+| `components/layout.blade.php` | Layout base: `title`, nav, `$slot`, estilos |
+| `components/card.blade.php` | Tarjeta reutilizable con merge de clases |
+| `welcome.blade.php` | `<x-layout title="Home Page">` |
+| `about.blade.php` | `<x-layout title="About">` |
+| `contact.blade.php` | `<x-layout title="Contact">` + `<x-card class="max-w-400">` |
+
+### Cómo funciona `$attributes->merge()`
+
+En `contact.blade.php` se pasa `class="max-w-400"` al componente card. El merge combina la clase base `card` del componente con `max-w-400` de la vista, produciendo en el HTML:
+
+```html
+<div class="card max-w-400">...</div>
+```
+
+Así el componente define estilos por defecto y cada vista puede añadir o sobrescribir clases sin duplicar el markup del card.
 
 ### Evidencia
 
-![Episodio 04 — layout](./img/ep04-layout.png)
+**Parte 1 — layout y `$slot`**
+
+![Layout con slot y navegación](./img/ep04-layout-slot.png)
+
+**Parte 2 — props, card y `$attributes->merge()`**
+
+![Componente card con merge de clases en contact](./img/ep04-layout-card-merge.png)
+
+La captura muestra `contact.blade.php` con `<x-layout title="Contact">` y `<x-card class="max-w-400">`, el código de `layout.blade.php` y `card.blade.php`, y en el navegador/DevTools el `div` renderizado como `class="card max-w-400"` con título de pestaña **Contact**.
 
 ### Problemas y soluciones
 
-*[Pendiente]*
+No se presentaron errores. El merge de clases se verificó en las herramientas de desarrollo del navegador.
 
 ### Comentarios personales
 
-*[Pendiente]*
+Los componentes en `resources/views/components/` son la forma idiomática de Laravel para layouts y piezas UI reutilizables. Las **props** (`title`) permiten datos dinámicos con defaults; el **slot** permite contenido distinto por página; **`$attributes->merge()`** evita perder clases al pasar atributos desde fuera del componente.
 
 ### Commit Git
 
 ```
-episodio-04: layout Blade reutilizable
+episodio-04: layouts y componentes Blade con props, slot y merge de clases
 ```
 
 ---
