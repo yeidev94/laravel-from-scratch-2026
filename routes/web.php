@@ -1,39 +1,28 @@
 <?php
 
+use App\Models\Idea;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/contact', 'contact');
 Route::view('/about', 'about');
 
 Route::get('/', function () {
-    return view('welcome', [
-        'tasks' => [
-            'task 1',
-            'task 2',
-            'task 3',
-        ],
-        'greeting' => 'Hello World',
-        'person' => 'Yeison'
-    ]);
-});
+    $ideas = Idea::query()
+        ->when(request('state'), function ($query, $state) {
+            $query->where('state', $state);
+        })
+        ->get();
 
-
-Route::get('/', function () {
-   $ideas = session()->get('ideas', []);
     return view('ideas', [
-        'ideas' => $ideas
+        'ideas' => $ideas,
     ]);
 });
 
 Route::post('/ideas', function () {
-    $idea = request('idea');
-    session() -> push('ideas', $idea);
-    return redirect('/');
-});
-
-//temporary
-Route::get('/delete-ideas', function() {
-    session()->forget('ideas');
+    Idea::create([
+        'description' => request('idea'),
+        'state' => 'pending',
+    ]);
 
     return redirect('/');
 });

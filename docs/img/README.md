@@ -24,13 +24,20 @@
 | `ep07-session-ideas.png` | 07 | `session()->push` y listado |
 | `ep07-session-delete.png` | 07 | `session()->forget('ideas')` |
 | `evidencia-formulario.png` | 07 | **Obligatoria** — formulario funcional |
+| `ep08-make-migration.png` | 08 | `php artisan make:migration create_ideas_table` |
+| `ep08-migrate-dbeaver.png` | 08 | Schema + `php artisan migrate` + tabla en DBeaver |
+| `ep08-migrate-refresh.png` | 08 | `php artisan migrate:refresh` (opción 2) |
+| `ep08-add-state-migration.png` | 08 | `add_state_to_ideas_table` + `Schema::table()` (opción 3) |
+| `ep08-db-collection.png` | 08 | Listado con Query Builder |
+| `ep08-eloquent-create.png` | 08 | `Idea::create()` y listado en navegador |
+| `ep08-eloquent-when-dd.png` | 08 | `->when()` + `dd($state)` con `?state=pending` |
+| `ep08-eloquent-filter-state.png` | 08 | Filtro `?state=active` aplicado |
+| `evidencia-listado-bd.png` | 08 | **Obligatoria** — listado desde BD con Eloquent |
 
 ## Pendientes (evidencias obligatorias del entregable)
 
 | Archivo | Episodio |
 |---------|----------|
-| `evidencia-formulario.png` | 07 |
-| `evidencia-listado-bd.png` | 08 |
 | `evidencia-crear.png` | 09–10 |
 | `evidencia-editar.png` | 09 |
 | `evidencia-actualizar.png` | 09 |

@@ -11,188 +11,31 @@
 
 ---
 
-## Resumen del entregable
+## Índice
 
-Este entregable corresponde al desarrollo inicial del proyecto Laravel. Se documenta el dominio de los fundamentos del framework: rutas, vistas Blade, layouts, formularios, CSRF, migraciones, modelos Eloquent, controladores, validación, componentes visuales y autenticación básica con relaciones entre usuarios e ideas.
-
-**Ambiente utilizado:** VM Debian 12 (Vagrant) en `~/sites/laravel-from-scratch-2026`, con MariaDB (`larabase`), Apache y herramientas instaladas en el Workshop 03.
-
----
-
-## Estructura del proyecto (código + documentación)
-
-Todo el Proyecto 1 vive en **una sola carpeta**: el código Laravel y la documentación del curso están juntos, tal como exige la rúbrica del ISW811.
-
-| Ubicación | Ruta |
-|-----------|------|
-| **Host (Windows)** | `C:\Users\yeide\isw811\VMs\webserver\sites\laravel-from-scratch-2026` |
-| **VM (Debian)** | `~/sites/laravel-from-scratch-2026` |
-| **Vagrant** | `C:\Users\yeide\isw811\VMs\webserver` |
-
-```
-laravel-from-scratch-2026/
-├── app/                    # Código de la aplicación Laravel
-├── bootstrap/
-├── config/
-├── database/
-├── docs/                   # Documentación ISW811 (Markdown + capturas)
-│   ├── entregable01.md     # Episodios 1–16
-│   ├── entregable02.md     # Episodios 17–30
-│   ├── entregable03.md     # Episodios 31–43
-│   └── img/                # Capturas de pantalla (./img/...)
-├── public/
-├── resources/
-├── routes/
-├── tests/
-├── .git/                   # Repositorio Git del proyecto
-├── artisan
-├── composer.json
-├── package.json
-└── README.md               # Instrucciones de instalación y ejecución
-```
-
-> **Nota de trabajo:** editar código y documentación desde el host en `sites\laravel-from-scratch-2026`; los cambios se sincronizan automáticamente con la VM vía carpeta compartida de Vagrant.
+| # | Episodio | Estado | Enlace |
+|---|----------|--------|--------|
+| 01 | Welcome Aboard — Creación del proyecto Laravel | Completado | [Episodio 01](#episodio-01) |
+| 02 | Set Up Your Development Environment | Completado | [Episodio 02](#episodio-02) |
+| 03 | Routing 101 | Completado | [Episodio 03](#episodio-03) |
+| 04 | Layout Files | Completado | [Episodio 04](#episodio-04) |
+| 05 | Pass Data to Views | Completado | [Episodio 05](#episodio-05) |
+| 06 | Blade Directives | Completado | [Episodio 06](#episodio-06) |
+| 07 | Forms | Completado | [Episodio 07](#episodio-07) |
+| 08 | Databases, Migrations, and Eloquent | Completado | [Episodio 08](#episodio-08) |
+| 09 | HTTP Requests and REST | Pendiente | [Episodio 09](#episodio-09) |
+| 10 | Controllers | Pendiente | [Episodio 10](#episodio-10) |
+| 11 | Request Validation | Pendiente | [Episodio 11](#episodio-11) |
+| 12 | Form Request Classes | Pendiente | [Episodio 12](#episodio-12) |
+| 13 | A Brief DaisyUI Detour | Pendiente | [Episodio 13](#episodio-13) |
+| 14 | Authentication Explained | Pendiente | [Episodio 14](#episodio-14) |
+| 15 | Require Authentication With Middleware | Pendiente | [Episodio 15](#episodio-15) |
+| 16 | Eloquent Relationships | Pendiente | [Episodio 16](#episodio-16) |
 
 ---
 
-## Contenido oficial del entregable
 
-### I. The Fundamentals
-
-| # | Episodio | Duración | Estado |
-|---|----------|----------|--------|
-| 01 | Welcome Aboard | 34s | Completado |
-| 02 | Set Up Your Development Environment | 7m 27s | Completado *(en Ep. 01)* |
-| 03 | Routing 101 | 5m 26s | Completado |
-| 04 | Layout Files | 16m 10s | Completado |
-| 05 | Pass Data to Views | 5m 36s | Completado |
-| 06 | Blade Directives | 7m 39s | Completado |
-| 07 | Forms | 19m 43s | Completado |
-| 08 | Databases, Migrations, and Eloquent | 23m 59s | Pendiente |
-| 09 | HTTP Requests and REST | 24m 49s | Pendiente |
-| 10 | Controllers | 8m 51s | Pendiente |
-| 11 | Request Validation | 12m 47s | Pendiente |
-| 12 | Form Request Classes | 8m 39s | Pendiente |
-| 13 | A Brief DaisyUI Detour | 12m 48s | Pendiente |
-
-### II. Authentication and Authorization (primera parte)
-
-| # | Episodio | Duración | Estado |
-|---|----------|----------|--------|
-| 14 | Authentication Explained | 24m 41s | Pendiente |
-| 15 | Require Authentication With Middleware | 13m 36s | Pendiente |
-| 16 | Eloquent Relationships | 7m 40s | Pendiente |
-
----
-
-## Lo que debe demostrar el proyecto
-
-- [x] Proyecto Laravel funcional creado y ejecutándose
-- [x] Rutas básicas definidas
-- [x] Vistas con Blade
-- [x] Layouts y componentes Blade
-- [x] Paso de datos desde rutas o controladores hacia vistas
-- [x] Directivas Blade (`@if`, `@foreach`, `@forelse`, etc.)
-- [x] Formularios creados y procesados
-- [x] Tokens CSRF (`@csrf`) en formularios POST
-- [ ] Migraciones creadas y ejecutadas
-- [ ] Modelos Eloquent
-- [ ] Operaciones CRUD básicas (crear, leer, editar, actualizar, eliminar)
-- [ ] Controladores (resourceful)
-- [ ] Validación de formularios
-- [ ] Form Request Classes
-- [ ] Estilos con TailwindCSS y DaisyUI
-- [ ] Registro, inicio de sesión y cierre de sesión
-- [ ] Middleware de autenticación (`auth`, `guest`)
-- [ ] Relación User ↔ Idea con Eloquent (`hasMany` / `belongsTo`)
-
----
-
-## Capturas de pantalla obligatorias
-
-Estas capturas son requisito de evaluación (10 pts). Guardarlas en `docs/img/` y referenciarlas en los episodios correspondientes.
-
-| Evidencia requerida | Archivo sugerido | Episodio(s) |
-|---------------------|------------------|-------------|
-| Página inicial del proyecto | `evidencia-pagina-inicial.png` | 02–03 |
-| Rutas creadas | `evidencia-rutas.png` | 03, 10 |
-| Formulario funcional | `evidencia-formulario.png` | 07 |
-| Listado de registros en BD | `evidencia-listado-bd.png` | 08 |
-| Creación de registro | `evidencia-crear.png` | 09–10 |
-| Edición de registro | `evidencia-editar.png` | 09 |
-| Actualización de registro | `evidencia-actualizar.png` | 09 |
-| Eliminación de registro | `evidencia-eliminar.png` | 09 |
-| Validaciones funcionando | `evidencia-validacion.png` | 11–12 |
-| Pantalla de registro | `evidencia-registro.png` | 14 |
-| Pantalla de inicio de sesión | `evidencia-login.png` | 14 |
-| Cierre de sesión (logout) | `evidencia-logout.png` | 14–15 |
-
-### Galería de evidencias — avance actual (Ep. 01 y 03)
-
-**Episodio 01 — proyecto y Apache**
-
-![Estructura del proyecto](./img/ep01-estructura-laravel.png)
-![Página inicial lfts.local](./img/evidencia-pagina-inicial.png)
-![Welcome personalizado](./img/ep01-welcome-personalizado.png)
-
-**Episodio 03 — Routing 101**
-
-![About](./img/ep03-about.png)
-![Contact](./img/ep03-contact.png)
-![Evidencia rutas obligatoria](./img/evidencia-rutas.png)
-
-**Episodio 04 — Layout Files**
-
-![Layout slot](./img/ep04-layout-slot.png)
-![Card merge](./img/ep04-layout-card-merge.png)
-
-**Episodio 07 — Forms**
-
-![Formulario](./img/ep07-form-post-csrf.png)
-![Session ideas](./img/ep07-session-ideas.png)
-
-### Galería de evidencias obligatorias — pendientes
-
-![Formulario funcional](./img/evidencia-formulario.png)
-![Listado en base de datos](./img/evidencia-listado-bd.png)
-![Validaciones](./img/evidencia-validacion.png)
-![Registro de usuario](./img/evidencia-registro.png)
-![Inicio de sesión](./img/evidencia-login.png)
-
----
-
-## Requisitos específicos de entrega
-
-- Mínimo **un commit por episodio** (del 01 al 16).
-- Documentar **cada episodio** en este archivo (`docs/entregable01.md`).
-- Incluir repositorio Git completo (carpeta `.git/`).
-- Incluir `README.md` con instrucciones de ejecución.
-- **No incluir** `vendor/` ni `node_modules/`.
-- Subir un único `.tar.gz` al Campus Virtual UTN antes del cierre.
-
-### Comando para generar el archivo
-
-```bash
-tar cvfz ISW811_Proyecto1_Entregable01_HernandezGaritaYeison.tar.gz \
-  --exclude=laravel-from-scratch-2026/node_modules \
-  --exclude=laravel-from-scratch-2026/vendor \
-  laravel-from-scratch-2026/
-```
-
-### Criterios de evaluación
-
-| Criterio | Puntos |
-|----------|--------|
-| Implementación funcional de los episodios 1–16 | 40 |
-| Uso correcto de Git (commits claros y progresivos) | 20 |
-| Documentación técnica en Markdown | 20 |
-| Evidencias mediante capturas de pantalla | 10 |
-| Orden, limpieza y correcto `.tar.gz` | 10 |
-| **Total** | **100** |
-
----
-
-## Episodio 01: Welcome Aboard — Creación del proyecto Laravel
+## Episodio 01: Welcome Aboard — Creación del proyecto Laravel {#episodio-01}
 
 ### Resumen
 
@@ -353,7 +196,7 @@ episodio-01: proyecto Laravel funcional con virtual host lfts.local
 
 ---
 
-## Episodio 02: Set Up Your Development Environment
+## Episodio 02: Set Up Your Development Environment {#episodio-02}
 
 ### Resumen
 
@@ -369,7 +212,7 @@ episodio-02: cubierto en episodio-01 (entorno y proyecto en Vagrant)
 
 ---
 
-## Episodio 03: Routing 101
+## Episodio 03: Routing 101 {#episodio-03}
 
 ### Resumen
 
@@ -463,7 +306,7 @@ episodio-03: rutas GET para welcome, about y contact
 
 ---
 
-## Episodio 04: Layout Files
+## Episodio 04: Layout Files {#episodio-04}
 
 ### Resumen
 
@@ -576,7 +419,7 @@ episodio-04: layouts y componentes Blade con props, slot y merge de clases
 
 ---
 
-## Episodio 05: Pass Data to Views
+## Episodio 05: Pass Data to Views {#episodio-05}
 
 ### Resumen
 
@@ -648,7 +491,7 @@ episodio-05: paso de datos y query string a vistas Blade
 
 ---
 
-## Episodio 06: Blade Directives
+## Episodio 06: Blade Directives {#episodio-06}
 
 ### Resumen
 
@@ -745,7 +588,7 @@ episodio-06: directivas Blade dump, if, foreach, unless y forelse
 
 ---
 
-## Episodio 07: Forms
+## Episodio 07: Forms {#episodio-07}
 
 ### Resumen
 
@@ -878,48 +721,216 @@ episodio-07: formulario POST, CSRF y ideas en session storage
 
 ---
 
-## Episodio 08: Databases, Migrations, and Eloquent
+## Episodio 08: Databases, Migrations, and Eloquent {#episodio-08}
 
 ### Resumen
 
-*[Pendiente: migración ideas, modelo Idea, Idea::create(), consultas Eloquent.]*
+Se migró el almacenamiento de ideas desde **session storage** (Ep. 07) hacia **MariaDB** con migraciones, Query Builder y **Eloquent**. Se creó la tabla `ideas`, se agregó la columna `state`, el modelo `Idea`, inserción con `Idea::create()` y filtrado opcional por query string (`?state=active`).
+
+| Antes (sesión) | Ahora (BD + Eloquent) |
+|----------------|----------------------|
+| `$ideas` arreglo PHP | `$ideas` Collection |
+| `count($ideas)` | `$ideas->count()` |
+| `{{ $idea }}` | `{{ $idea->description }}` |
+
+### Conceptos clave
+
+| Concepto | Descripción |
+|----------|-------------|
+| **Migración** | Archivo PHP que define cambios de schema (`up` / `down`) |
+| **Query Builder** | `DB::table('ideas')->get()` — acceso a BD sin modelo |
+| **Eloquent** | Clase `Idea` = tabla `ideas`; interfaz orientada a objetos |
+| **Mass assignment** | `$guarded` / `$fillable` controlan qué campos acepta `create()` |
+| **`->when()`** | Aplica un filtro solo si hay query string en la URL |
+
+### Implementación
+
+#### 1. Migración `create_ideas_table`
+
+```bash
+php artisan make:migration
+# nombre: create_ideas_table
+```
+
+`database/migrations/2026_06_22_220326_create_ideas_table.php`:
+
+```php
+Schema::create('ideas', function (Blueprint $table) {
+    $table->id();
+    $table->timestamps();
+    $table->text('description');
+});
+```
+
+```bash
+php artisan migrate
+```
+
+#### 2. Query Builder y vista
+
+**`routes/web.php`** (paso intermedio):
+
+```php
+$ideas = DB::table('ideas')->get();
+```
+
+**`resources/views/ideas.blade.php`:**
+
+```blade
+@if ($ideas->count())
+    @foreach ($ideas as $idea)
+        <li>{{ $idea->description }}</li>
+    @endforeach
+@endif
+```
+
+#### 3. Cambios de schema — tres opciones
+
+| Opción | Acción | ¿Pierde datos? | Cuándo |
+|--------|--------|----------------|--------|
+| **1** | Editar migración existente | Depende | Solo desarrollo local |
+| **2** | `php artisan migrate:refresh` | **Sí — todos** | Resetear BD en desarrollo |
+| **3** | Nueva migración por cambio | **No** | **Producción y equipos** |
+
+**Opción 2 — `migrate:refresh`**
+
+Revierte todas las migraciones y las re-ejecuta. La tabla queda vacía tras el refresh.
+
+**Opción 3 — `add_state_to_ideas_table` (recomendada)**
+
+```bash
+php artisan make:migration
+# nombre: add_state_to_ideas_table
+```
+
+```php
+// up
+Schema::table('ideas', function (Blueprint $table) {
+    $table->string('state');
+});
+
+// down
+Schema::table('ideas', function (Blueprint $table) {
+    $table->dropColumn('state');
+});
+```
+
+| Método | Uso |
+|--------|-----|
+| `Schema::create()` | Crear tabla nueva |
+| `Schema::table()` | Modificar tabla existente |
+
+#### 4. Modelo Eloquent `Idea`
+
+```bash
+php artisan make:model Idea
+```
+
+Convención: modelo **singular** (`Idea`) → tabla **plural** (`ideas`).
+
+**`app/Models/Idea.php`:**
+
+```php
+class Idea extends Model
+{
+    protected $guarded = [];
+}
+```
+
+`$guarded = []` deja la lista negra vacía: **ningún** campo bloqueado para `create()`. En producción se prefiere `$fillable = ['description', 'state']`.
+
+#### 5. Crear y listar con Eloquent
+
+**POST `/ideas`:**
+
+```php
+Idea::create([
+    'description' => request('idea'),
+    'state' => 'pending',
+]);
+```
+
+**GET `/`:**
+
+```php
+$ideas = Idea::query()
+    ->when(request('state'), function ($query, $state) {
+        $query->where('state', $state);
+    })
+    ->get();
+```
+
+| URL | Resultado |
+|-----|-----------|
+| `lfts.local/` | Todas las ideas |
+| `lfts.local/?state=pending` | Solo `pending` |
+| `lfts.local/?state=active` | Solo `active` |
+
+Se depuró primero con `dd($state)` dentro del callback de `->when()`; luego se aplicó `where('state', $state)`.
 
 ### Comandos utilizados
 
 ```bash
-php artisan make:migration create_ideas_table
+php artisan make:migration          # create_ideas_table
+php artisan migrate
+php artisan migrate:refresh         # opción 2
+php artisan make:migration          # add_state_to_ideas_table
 php artisan migrate
 php artisan make:model Idea
 ```
 
 ### Archivos modificados o creados
 
-- `database/migrations/xxxx_xx_xx_create_ideas_table.php`
-- `app/Models/Idea.php`
-- `routes/web.php`
-- `resources/views/ideas/index.blade.php`
+| Archivo | Cambio |
+|---------|--------|
+| `database/migrations/2026_06_22_220326_create_ideas_table.php` | Tabla `ideas` + `description` |
+| `database/migrations/2026_06_22_223513_add_state_to_ideas_table.php` | Columna `state` |
+| `app/Models/Idea.php` | Modelo Eloquent |
+| `routes/web.php` | Eloquent + filtro `when()` |
+| `resources/views/ideas.blade.php` | Listado `$idea->description` |
 
 ### Evidencia
 
-![Episodio 08 — listado de ideas](./img/ep08-eloquent.png)
+![Crear migración](./img/ep08-make-migration.png)
+
+![Migrate y DBeaver](./img/ep08-migrate-dbeaver.png)
+
+![migrate:refresh](./img/ep08-migrate-refresh.png)
+
+![add_state_to_ideas_table](./img/ep08-add-state-migration.png)
+
+![Query Builder](./img/ep08-db-collection.png)
+
+![Idea::create](./img/ep08-eloquent-create.png)
+
+![dd state pending](./img/ep08-eloquent-when-dd.png)
+
+![Filtro state=active](./img/ep08-eloquent-filter-state.png)
+
+**Evidencia obligatoria — listado desde BD:**
+
+![evidencia-listado-bd](./img/evidencia-listado-bd.png)
 
 ### Problemas y soluciones
 
-*[Pendiente]*
+- **`Nothing to migrate.`** — Migración ya ejecutada; verificar tabla `migrations`.
+- **`ParseError: unexpected token "}"`** — Llave extra en `add_state_to_ideas_table.php`; corregir y volver a `migrate`.
+- **`Migration not found` en refresh** — Registro huérfano de migración eliminada; no bloquea el comando.
+- **Tabla vacía tras refresh** — Esperado en opción 2; opción 3 conserva datos.
 
 ### Comentarios personales
 
-*[Pendiente]*
+Una migración por cambio de schema mantiene historial claro y evita perder datos. Eloquent simplifica el código respecto a Query Builder: cada fila es un objeto `Idea`. El patrón `->when(request('state'), ...)` evita duplicar rutas o consultas para filtros opcionales.
 
 ### Commit Git
 
 ```
-episodio-08: migraciones, modelo Idea y Eloquent
+episodio-08: migraciones, modelo Idea, Eloquent y filtro por state
 ```
 
 ---
 
-## Episodio 09: HTTP Requests and REST
+## Episodio 09: HTTP Requests and REST {#episodio-09}
 
 ### Resumen
 
@@ -956,7 +967,7 @@ episodio-09: CRUD RESTful para ideas
 
 ---
 
-## Episodio 10: Controllers
+## Episodio 10: Controllers {#episodio-10}
 
 ### Resumen
 
@@ -995,7 +1006,7 @@ episodio-10: IdeaController y rutas resourceful
 
 ---
 
-## Episodio 11: Request Validation
+## Episodio 11: Request Validation {#episodio-11}
 
 ### Resumen
 
@@ -1033,7 +1044,7 @@ episodio-11: validación de requests y mensajes de error
 
 ---
 
-## Episodio 12: Form Request Classes
+## Episodio 12: Form Request Classes {#episodio-12}
 
 ### Resumen
 
@@ -1070,7 +1081,7 @@ episodio-12: clases Form Request para validación
 
 ---
 
-## Episodio 13: A Brief DaisyUI Detour
+## Episodio 13: A Brief DaisyUI Detour {#episodio-13}
 
 ### Resumen
 
@@ -1110,7 +1121,7 @@ episodio-13: estilos con Tailwind y DaisyUI
 
 ---
 
-## Episodio 14: Authentication Explained
+## Episodio 14: Authentication Explained {#episodio-14}
 
 ### Resumen
 
@@ -1152,7 +1163,7 @@ episodio-14: registro, login y logout de usuarios
 
 ---
 
-## Episodio 15: Require Authentication With Middleware
+## Episodio 15: Require Authentication With Middleware {#episodio-15}
 
 ### Resumen
 
@@ -1191,7 +1202,7 @@ episodio-15: middleware de autenticación y user_id en ideas
 
 ---
 
-## Episodio 16: Eloquent Relationships
+## Episodio 16: Eloquent Relationships {#episodio-16}
 
 ### Resumen
 

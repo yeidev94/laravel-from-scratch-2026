@@ -140,7 +140,8 @@ sudo chmod -R 775 storage bootstrap/cache
 | 05 | Pass Data to Views | Completado |
 | 06 | Blade Directives | Completado |
 | 07 | Forms | Completado |
-| 08–16 | Pendientes | — |
+| 08 | Databases, Migrations, and Eloquent | Completado |
+| 09–16 | Pendientes | — |
 
 ### Episodio 01 — Proyecto Laravel funcional
 
@@ -212,6 +213,16 @@ Formulario POST `/ideas` con `@csrf`, Tailwind CSS e ideas en session storage.
 ![Ideas en sesión](docs/img/ep07-session-ideas.png)
 
 ![Eliminar sesión](docs/img/ep07-session-delete.png)
+
+### Episodio 08 — Databases, Migrations, Eloquent
+
+Ver sección completa en [docs/entregable01.md#episodio-08](docs/entregable01.md#episodio-08).
+
+![Eloquent create](docs/img/ep08-eloquent-create.png)
+
+![when dd state](docs/img/ep08-eloquent-when-dd.png)
+
+![Filtro state active](docs/img/ep08-eloquent-filter-state.png)
 
 ---
 

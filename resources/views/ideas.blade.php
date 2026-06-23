@@ -12,12 +12,12 @@
         <button type="submit" class="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">Save</button>
     </div>
     </form>
-    @if (count($ideas))    
+    @if ($ideas->count())    
         <div class="mt-6 text-white">
             <h2>Your Ideas</h2>
             @foreach ( $ideas as $idea)
                 <li>
-                    {{ $idea  }}
+                    {{ $idea->description }}
                 </li>
             @endforeach
         </div>
