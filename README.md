@@ -143,7 +143,8 @@ sudo chmod -R 775 storage bootstrap/cache
 | 08 | Databases, Migrations, and Eloquent | Completado |
 | 09 | HTTP Requests and REST | Completado |
 | 10 | Controllers | Completado |
-| 11–16 | Pendientes | — |
+| 11 | Request Validation | Completado |
+| 12–16 | Pendientes | — |
 
 ### Episodio 01 — Proyecto Laravel funcional
 
@@ -245,6 +246,18 @@ CRUD movido de closures en `web.php` a `IdeaController` (Resource). Vista `creat
 ![Resource controller](docs/img/ep10-resource-controller.png)
 
 ![Rutas → controlador](docs/img/ep10-routes-controller.png)
+
+### Episodio 11 — Request Validation
+
+[Ver documentación completa](docs/entregable01.md#episodio-11)
+
+`$request->validate()` en `store()`, redirect con `$errors`, directiva `@error` y componente `<x-forms.error>`.
+
+![validate store](docs/img/ep11-validate-store.png)
+
+![Error en formulario](docs/img/ep11-errors-feedback.png)
+
+![Componente error](docs/img/ep11-error-component.png)
 
 ---
 

@@ -25,7 +25,7 @@
 | 08 | Databases, Migrations, and Eloquent | Completado | [Episodio 08](#episodio-08) |
 | 09 | HTTP Requests and REST | Completado | [Episodio 09](#episodio-09) |
 | 10 | Controllers | Completado | [Episodio 10](#episodio-10) |
-| 11 | Request Validation | Pendiente | [Episodio 11](#episodio-11) |
+| 11 | Request Validation | Completado | [Episodio 11](#episodio-11) |
 | 12 | Form Request Classes | Pendiente | [Episodio 12](#episodio-12) |
 | 13 | A Brief DaisyUI Detour | Pendiente | [Episodio 13](#episodio-13) |
 | 14 | Authentication Explained | Pendiente | [Episodio 14](#episodio-14) |
@@ -1163,36 +1163,88 @@ episodio-10: IdeaController resource y vista create
 
 ### Resumen
 
-*[Pendiente: request->validate(), @error, componente x-error.]*
+Se validó el formulario **create** antes de guardar en BD. Si la validación falla, Laravel **redirige de vuelta** al formulario con los errores en `$errors` y el input anterior en `old()`.
 
-### Comandos utilizados
+Documentación oficial: [Laravel Validation](https://laravel.com/docs/13.x/validation)
 
-```bash
-# N/A
+### Validación en el controlador
+
+En `IdeaController::store()`:
+
+```php
+$request->validate([
+    'description' => ['required', 'min:10'],
+]);
 ```
 
-### Archivos modificados o creados
+Opciones de reglas: `required`, `min:10`, `max:255`, `email`, etc. — todas en la [documentación de reglas](https://laravel.com/docs/13.x/validation#available-validation-rules).
 
-- `app/Http/Controllers/IdeaController.php`
-- `resources/views/components/error.blade.php`
-- `resources/views/ideas/create.blade.php`
+El nombre del campo en el `validate()` debe coincidir con el `name` del input en el formulario (`description`).
+
+### Objeto `$errors`
+
+Tras un fallo de validación, `$errors` está disponible en todas las vistas. Ejemplos:
+
+```php
+$errors->has('description')      // ¿hay error en ese campo?
+$errors->first('description')    // primer mensaje del campo
+```
+
+### Directiva `@error`
+
+En Blade, sin escribir `@if` manual:
+
+```blade
+@error('description')
+    <p class="text-xs text-red-500">{{ $message }}</p>
+@enderror
+```
+
+`$message` contiene el texto del error (p. ej. *"The description field is required."*).
+
+### Componente reutilizable
+
+**`resources/views/components/forms/error.blade.php`**
+
+```blade
+@props(['name' => 'required'])
+
+@error($name)
+    <p class="text-xs text-red-500">{{ $message }}</p>
+@enderror
+```
+
+Uso en **`create.blade.php`**:
+
+```blade
+<textarea name="description">{{ old('description') }}</textarea>
+<x-forms.error name="description" />
+```
+
+### Archivos tocados
+
+`IdeaController.php` (`store`), `ideas/create.blade.php`, `components/forms/error.blade.php`
 
 ### Evidencia
 
-![Episodio 11 — validación](./img/ep11-validation.png)
+![validate() en store](./img/ep11-validate-store.png)
+
+![Feedback de error en el formulario](./img/ep11-errors-feedback.png)
+
+![Componente x-forms.error](./img/ep11-error-component.png)
 
 ### Problemas y soluciones
 
-*[Pendiente]*
+El `textarea` de create tenía `name="idea"` pero la validación apuntaba a `description`. Se unificó a `description` (igual que en `edit`) para que pasen tanto la validación como el guardado.
 
 ### Comentarios personales
 
-*[Pendiente]*
+La validación inline en el controlador es suficiente para formularios simples; en el Ep. 12 se moverá a **Form Request** classes para separar reglas del controlador.
 
 ### Commit Git
 
 ```
-episodio-11: validación de requests y mensajes de error
+episodio-11: validación required/min y componente x-forms.error
 ```
 
 ---

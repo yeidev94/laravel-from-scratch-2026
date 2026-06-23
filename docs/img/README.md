@@ -41,7 +41,11 @@
 | `ep10-make-controller.png` | 10 | `php artisan make:controller` (Empty / Resource) |
 | `ep10-resource-controller.png` | 10 | `IdeaController` generado como Resource |
 | `ep10-routes-controller.png` | 10 | Rutas en `web.php` apuntando al controlador |
+| `ep11-validate-store.png` | 11 | `$request->validate()` en `store()` |
+| `ep11-errors-feedback.png` | 11 | Error de validación en `/ideas/create` |
+| `ep11-error-component.png` | 11 | Componente `<x-forms.error>` con `@error` |
 | `evidencia-crear.png` | 10 | **Obligatoria** — flujo create (index vacío + formulario) |
+| `evidencia-validacion.png` | 11 | **Obligatoria** — mensaje de error de validación |
 
 ## Pendientes (evidencias obligatorias del entregable)
 
@@ -50,7 +54,6 @@
 | `evidencia-editar.png` | 09 |
 | `evidencia-actualizar.png` | 09 |
 | `evidencia-eliminar.png` | 09 |
-| `evidencia-validacion.png` | 11–12 |
 | `evidencia-registro.png` | 14 |
 | `evidencia-login.png` | 14 |
 | `evidencia-logout.png` | 14–15 |
