@@ -37,12 +37,16 @@
 | `ep09-edit-method-patch.png` | 09 | Edit + `@method('PATCH')` |
 | `ep09-update-patch-route.png` | 09 | PATCH update y redirect a show |
 | `ep09-delete-destroy.png` | 09 | DELETE destroy + `form="delete-idea-form"` |
+| `ep10-create-empty-index.png` | 10 | Vista create, index vacío y rutas create/store |
+| `ep10-make-controller.png` | 10 | `php artisan make:controller` (Empty / Resource) |
+| `ep10-resource-controller.png` | 10 | `IdeaController` generado como Resource |
+| `ep10-routes-controller.png` | 10 | Rutas en `web.php` apuntando al controlador |
+| `evidencia-crear.png` | 10 | **Obligatoria** — flujo create (index vacío + formulario) |
 
 ## Pendientes (evidencias obligatorias del entregable)
 
 | Archivo | Episodio |
 |---------|----------|
-| `evidencia-crear.png` | 09–10 |
 | `evidencia-editar.png` | 09 |
 | `evidencia-actualizar.png` | 09 |
 | `evidencia-eliminar.png` | 09 |

@@ -142,7 +142,8 @@ sudo chmod -R 775 storage bootstrap/cache
 | 07 | Forms | Completado |
 | 08 | Databases, Migrations, and Eloquent | Completado |
 | 09 | HTTP Requests and REST | Completado |
-| 10–16 | Pendientes | — |
+| 10 | Controllers | Completado |
+| 11–16 | Pendientes | — |
 
 ### Episodio 01 — Proyecto Laravel funcional
 
@@ -230,6 +231,20 @@ Ver sección completa en [docs/entregable01.md#episodio-08](docs/entregable01.md
 ![Update](./docs/img/ep09-update-patch-route.png)
 
 ![Delete destroy](./docs/img/ep09-delete-destroy.png)
+
+### Episodio 10 — Controllers
+
+[Ver documentación completa](docs/entregable01.md#episodio-10)
+
+CRUD movido de closures en `web.php` a `IdeaController` (Resource). Vista `create` separada; index vacío enlaza a `/ideas/create`.
+
+![Create e index vacío](docs/img/ep10-create-empty-index.png)
+
+![make:controller](docs/img/ep10-make-controller.png)
+
+![Resource controller](docs/img/ep10-resource-controller.png)
+
+![Rutas → controlador](docs/img/ep10-routes-controller.png)
 
 ---
 

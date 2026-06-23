@@ -24,7 +24,7 @@
 | 07 | Forms | Completado | [Episodio 07](#episodio-07) |
 | 08 | Databases, Migrations, and Eloquent | Completado | [Episodio 08](#episodio-08) |
 | 09 | HTTP Requests and REST | Completado | [Episodio 09](#episodio-09) |
-| 10 | Controllers | Pendiente | [Episodio 10](#episodio-10) |
+| 10 | Controllers | Completado | [Episodio 10](#episodio-10) |
 | 11 | Request Validation | Pendiente | [Episodio 11](#episodio-11) |
 | 12 | Form Request Classes | Pendiente | [Episodio 12](#episodio-12) |
 | 13 | A Brief DaisyUI Detour | Pendiente | [Episodio 13](#episodio-13) |
@@ -1047,37 +1047,114 @@ episodio-09: REST, route model binding, PATCH update y DELETE destroy
 
 ### Resumen
 
-*[Pendiente: IdeaController con acciones resourceful, vista create separada.]*
+Se completó el flujo CRUD moviendo la lógica de **closures en `web.php`** al **`IdeaController`**. Se añadió la vista **`create`** para cuando no hay ideas y el `index` enlaza a `/ideas/create`.
+
+Un **Controller** en Laravel es una clase que agrupa la lógica de una petición HTTP: recibe la ruta, interactúa con modelos/vistas y devuelve la respuesta. Es la capa entre rutas y negocio — estructura preconstruida y convencional del framework.
+
+### Crear el controlador
+
+```bash
+php artisan make:controller
+# Name: IdeaController
+# Type: Resource
+# Model: Idea
+```
+
+Genera `app/Http/Controllers/IdeaController.php` con métodos CRUD ya definidos (stubs): `index`, `create`, `store`, `show`, `edit`, `update`, `destroy`.
+
+| Tipo | Uso |
+|------|-----|
+| **Empty** | Controlador vacío, métodos a mano |
+| **Resource** | CRUD estándar + Route Model Binding en `{idea}` |
+
+### Rutas → controlador
+
+**`routes/web.php`** — cada ruta apunta a un método del controlador:
+
+```php
+use App\Http\Controllers\IdeaController;
+
+Route::get('/ideas', [IdeaController::class, 'index']);
+Route::get('/ideas/create', [IdeaController::class, 'create']);
+Route::post('/ideas', [IdeaController::class, 'store']);
+Route::get('/ideas/{idea}', [IdeaController::class, 'show']);
+Route::get('/ideas/{idea}/edit', [IdeaController::class, 'edit']);
+Route::patch('/ideas/{idea}', [IdeaController::class, 'update']);
+Route::delete('/ideas/{idea}', [IdeaController::class, 'destroy']);
+```
+
+Equivalente compacto (para más adelante): `Route::resource('ideas', IdeaController::class);`
+
+La funcionalidad es la misma que en el Ep. 09; solo cambia **dónde** vive el código.
+
+### Vista `create` e index vacío
+
+**`ideas/index.blade.php`** — si no hay ideas, enlace a crear:
+
+```blade
+@else
+    <p>No Ideas Yet. <a href="/ideas/create">Create a New One</a></p>
+@endif
+```
+
+**`ideas/create.blade.php`** — formulario POST a `/ideas` (procesado por `store()`).
+
+### `IdeaController` — métodos clave
+
+```php
+public function create() {
+    return view('ideas.create');
+}
+
+public function store(Request $request) {
+    Idea::create([
+        'description' => request('idea'),
+        'state' => 'pending',
+    ]);
+    return redirect('/ideas');
+}
+
+public function destroy(Idea $idea) {
+    $idea->delete();
+    return redirect('/ideas');
+}
+```
+
+El resto (`index`, `show`, `edit`, `update`) replica la lógica que antes estaba en closures.
 
 ### Comandos utilizados
 
 ```bash
-php artisan make:controller IdeaController --resource
+php artisan make:controller    # IdeaController, Resource, model Idea
+php artisan route:list --path=ideas
 ```
 
-### Archivos modificados o creados
+### Archivos tocados
 
-- `app/Http/Controllers/IdeaController.php`
-- `routes/web.php`
-- `resources/views/ideas/create.blade.php`
-- `resources/views/ideas/index.blade.php`
+`IdeaController.php`, `routes/web.php`, `ideas/create.blade.php`, `ideas/index.blade.php`
 
 ### Evidencia
 
-![Episodio 10 — controlador](./img/ep10-controllers.png)
+![Create, index vacío y rutas create/store](./img/ep10-create-empty-index.png)
+
+![php artisan make:controller](./img/ep10-make-controller.png)
+
+![Resource controller generado](./img/ep10-resource-controller.png)
+
+![Rutas apuntando al controlador](./img/ep10-routes-controller.png)
 
 ### Problemas y soluciones
 
-*[Pendiente]*
+No se presentaron errores. Se eliminó la ruta temporal `/delete-ideas` al centralizar el CRUD en el controlador.
 
 ### Comentarios personales
 
-*[Pendiente]*
+Los controladores mantienen `web.php` legible y preparan el proyecto para validación, Form Requests y middleware en los episodios siguientes.
 
 ### Commit Git
 
 ```
-episodio-10: IdeaController y rutas resourceful
+episodio-10: IdeaController resource y vista create
 ```
 
 ---

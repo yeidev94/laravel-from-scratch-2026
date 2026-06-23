@@ -25,11 +25,11 @@
     </style>
 </head>
 <body class="bg-gray-700 p-6 mx-w-xl mx-auto">
-    <nav>
+    {{-- <nav>
         <a href="/">Home</a>
         <a href="/about">About Us</a>
         <a href="/contact">Contact</a>
-    </nav>
+    </nav> --}}
     <main>
     {{ $slot }} 
     </main>

@@ -2,66 +2,22 @@
 
 use App\Models\Idea;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\IdeaController;
 
 Route::view('/contact', 'contact');
+
 Route::view('/about', 'about');
 
-// index
-Route::get('/ideas', function () {
-    $ideas = Idea::all();
+Route::get('/ideas', [IdeaController::class, 'index']);
 
-    return view('ideas.index', [
-        'ideas' => $ideas,
-    ]);
-});
+Route::get('/ideas/create', [IdeaController::class, 'create']);
 
-// show
-Route::get('/ideas/{idea}', function (Idea $idea) {
-    // $idea = Idea::find($id);
-   // $idea = Idea::findOrFail($id);
+Route::post('/ideas', [IdeaController::class, 'store']);
 
-    // if(is_null($idea)){
-    //     abort(404);
-    // }
+Route::get('/ideas/{idea}', [IdeaController::class, 'show']);
 
-    return view('ideas.show', [
-        'idea'=>$idea
-    ]);
-});
+Route::get('/ideas/{idea}/edit', [IdeaController::class, 'edit']);
 
-// edit show the page
-Route::get('/ideas/{idea}/edit', function (Idea $idea) {
-    return view('ideas.edit', [
-        'idea'=>$idea
-    ]);
-});
+Route::patch('/ideas/{idea}', [IdeaController::class, 'update']);
 
-// update this one makes the patch
-Route::patch('/ideas/{idea}', function (Idea $idea) {
-    $idea->update([
-        'description' => request('description'),
-    ]);
-    return redirect("/ideas/{$idea->id}");
-});
-
-Route::post('/ideas', function () {
-    Idea::create([
-        'description' => request('idea'),
-        'state' => 'pending',
-    ]);
-
-    return redirect('/ideas');
-});
-
-Route::get('/delete-ideas', function() {
-
-    Idea::truncate();
-
-    return redirect('/ideas');
-});
-
-// destroy
-Route::delete('/ideas/{idea}', function (Idea $idea) {
-    $idea->delete();
-    return redirect('/ideas');
-});
+Route::delete('/ideas/{idea}',[IdeaController::class, 'destroy']);
