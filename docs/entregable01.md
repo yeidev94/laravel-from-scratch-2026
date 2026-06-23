@@ -23,7 +23,7 @@
 | 06 | Blade Directives | Completado | [Episodio 06](#episodio-06) |
 | 07 | Forms | Completado | [Episodio 07](#episodio-07) |
 | 08 | Databases, Migrations, and Eloquent | Completado | [Episodio 08](#episodio-08) |
-| 09 | HTTP Requests and REST | En progreso | [Episodio 09](#episodio-09) |
+| 09 | HTTP Requests and REST | Completado | [Episodio 09](#episodio-09) |
 | 10 | Controllers | Pendiente | [Episodio 10](#episodio-10) |
 | 11 | Request Validation | Pendiente | [Episodio 11](#episodio-11) |
 | 12 | Form Request Classes | Pendiente | [Episodio 12](#episodio-12) |
@@ -932,8 +932,6 @@ episodio-08: migraciones, modelo Idea, Eloquent y filtro por state
 
 ## Episodio 09: HTTP Requests and REST {#episodio-09}
 
-> **Estado:** En progreso — CRUD casi completo. Falta cerrar detalles del capítulo (p. ej. vista `create` separada).
-
 ### Resumen
 
 Se movió el flujo de ideas a vistas REST (`index`, `show`, `edit`), se reemplazó la búsqueda manual por id con **Route Model Binding** (`Idea $idea`) y se implementaron **update** (PATCH) y **destroy** (DELETE) usando **method spoofing** en formularios HTML.
@@ -1042,8 +1040,6 @@ El patrón `form="id-del-otro-form"` permite dos acciones (update/delete) en una
 ```
 episodio-09: REST, route model binding, PATCH update y DELETE destroy
 ```
-
-*(Commit pendiente — episodio en progreso.)*
 
 ---
 

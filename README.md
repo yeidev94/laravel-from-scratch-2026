@@ -141,7 +141,7 @@ sudo chmod -R 775 storage bootstrap/cache
 | 06 | Blade Directives | Completado |
 | 07 | Forms | Completado |
 | 08 | Databases, Migrations, and Eloquent | Completado |
-| 09 | HTTP Requests and REST | En progreso |
+| 09 | HTTP Requests and REST | Completado |
 | 10–16 | Pendientes | — |
 
 ### Episodio 01 — Proyecto Laravel funcional
@@ -219,9 +219,9 @@ Formulario POST `/ideas` con `@csrf`, Tailwind CSS e ideas en session storage.
 
 Ver sección completa en [docs/entregable01.md#episodio-08](docs/entregable01.md#episodio-08).
 
-### Episodio 09 — HTTP Requests and REST (en progreso)
+### Episodio 09 — HTTP Requests and REST
 
-Route model binding, `show`, `edit` y PATCH con `@method('PATCH')`.
+[Ver documentación completa](docs/entregable01.md#episodio-09)
 
 ![Show](./docs/img/ep09-show-findorfail.png)
 
