@@ -141,7 +141,8 @@ sudo chmod -R 775 storage bootstrap/cache
 | 06 | Blade Directives | Completado |
 | 07 | Forms | Completado |
 | 08 | Databases, Migrations, and Eloquent | Completado |
-| 09–16 | Pendientes | — |
+| 09 | HTTP Requests and REST | En progreso |
+| 10–16 | Pendientes | — |
 
 ### Episodio 01 — Proyecto Laravel funcional
 
@@ -218,11 +219,17 @@ Formulario POST `/ideas` con `@csrf`, Tailwind CSS e ideas en session storage.
 
 Ver sección completa en [docs/entregable01.md#episodio-08](docs/entregable01.md#episodio-08).
 
-![Eloquent create](docs/img/ep08-eloquent-create.png)
+### Episodio 09 — HTTP Requests and REST (en progreso)
 
-![when dd state](docs/img/ep08-eloquent-when-dd.png)
+Route model binding, `show`, `edit` y PATCH con `@method('PATCH')`.
 
-![Filtro state active](docs/img/ep08-eloquent-filter-state.png)
+![Show](./docs/img/ep09-show-findorfail.png)
+
+![Edit PATCH](./docs/img/ep09-edit-method-patch.png)
+
+![Update](./docs/img/ep09-update-patch-route.png)
+
+![Delete destroy](./docs/img/ep09-delete-destroy.png)
 
 ---
 

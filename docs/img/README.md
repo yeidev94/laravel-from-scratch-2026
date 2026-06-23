@@ -33,6 +33,10 @@
 | `ep08-eloquent-when-dd.png` | 08 | `->when()` + `dd($state)` con `?state=pending` |
 | `ep08-eloquent-filter-state.png` | 08 | Filtro `?state=active` aplicado |
 | `evidencia-listado-bd.png` | 08 | **Obligatoria** — listado desde BD con Eloquent |
+| `ep09-show-findorfail.png` | 09 | Show + Route Model Binding |
+| `ep09-edit-method-patch.png` | 09 | Edit + `@method('PATCH')` |
+| `ep09-update-patch-route.png` | 09 | PATCH update y redirect a show |
+| `ep09-delete-destroy.png` | 09 | DELETE destroy + `form="delete-idea-form"` |
 
 ## Pendientes (evidencias obligatorias del entregable)
 

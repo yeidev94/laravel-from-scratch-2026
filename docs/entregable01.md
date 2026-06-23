@@ -23,7 +23,7 @@
 | 06 | Blade Directives | Completado | [Episodio 06](#episodio-06) |
 | 07 | Forms | Completado | [Episodio 07](#episodio-07) |
 | 08 | Databases, Migrations, and Eloquent | Completado | [Episodio 08](#episodio-08) |
-| 09 | HTTP Requests and REST | Pendiente | [Episodio 09](#episodio-09) |
+| 09 | HTTP Requests and REST | En progreso | [Episodio 09](#episodio-09) |
 | 10 | Controllers | Pendiente | [Episodio 10](#episodio-10) |
 | 11 | Request Validation | Pendiente | [Episodio 11](#episodio-11) |
 | 12 | Form Request Classes | Pendiente | [Episodio 12](#episodio-12) |
@@ -932,9 +932,81 @@ episodio-08: migraciones, modelo Idea, Eloquent y filtro por state
 
 ## Episodio 09: HTTP Requests and REST {#episodio-09}
 
+> **Estado:** En progreso — CRUD casi completo. Falta cerrar detalles del capítulo (p. ej. vista `create` separada).
+
 ### Resumen
 
-*[Pendiente: CRUD completo, route model binding, method spoofing @method.]*
+Se movió el flujo de ideas a vistas REST (`index`, `show`, `edit`), se reemplazó la búsqueda manual por id con **Route Model Binding** (`Idea $idea`) y se implementaron **update** (PATCH) y **destroy** (DELETE) usando **method spoofing** en formularios HTML.
+
+| Ruta | HTTP | Acción |
+|------|------|--------|
+| `/ideas` | GET | Listado + crear |
+| `/ideas` | POST | Guardar nueva idea |
+| `/ideas/{idea}` | GET | Ver una idea |
+| `/ideas/{idea}/edit` | GET | Formulario editar |
+| `/ideas/{idea}` | PATCH | Actualizar `description` |
+| `/ideas/{idea}` | DELETE | Eliminar la idea |
+
+### Route Model Binding
+
+En lugar de `findOrFail($id)` y `abort(404)`, el parámetro `{idea}` se tipa como modelo:
+
+```php
+Route::get('/ideas/{idea}', function (Idea $idea) {
+    return view('ideas.show', ['idea' => $idea]);
+});
+```
+
+Laravel busca el registro por id; si no existe, responde **404** sin código extra.
+
+### Method spoofing
+
+Los formularios HTML solo envían GET/POST. Para PATCH o DELETE se usa `@method(...)` — Laravel lee el campo oculto `_method` y ejecuta el verbo correcto.
+
+### Editar y actualizar
+
+**GET** `/ideas/{idea}/edit` muestra el textarea con el valor actual.
+
+**PATCH** `/ideas/{idea}` recibe el POST spoofed y actualiza:
+
+```php
+Route::patch('/ideas/{idea}', function (Idea $idea) {
+    $idea->update(['description' => request('description')]);
+    return redirect("/ideas/{$idea->id}");
+});
+```
+
+### Eliminar (destroy) — dos formularios en `edit`
+
+En la misma página hay un formulario para **Update** (PATCH) y otro para **Delete** (DELETE). No se anidan formularios: el botón rojo usa el atributo HTML `form="delete-idea-form"` para enviar un segundo formulario por id.
+
+**`resources/views/ideas/edit.blade.php`**
+
+```blade
+<form method="POST" action="/ideas/{{ $idea->id }}">
+    @csrf
+    @method('PATCH')
+    <textarea name="description">{{ $idea->description }}</textarea>
+    <button type="submit">Update</button>
+    <button form="delete-idea-form" type="submit" class="...">Delete</button>
+</form>
+
+<form id="delete-idea-form" method="POST" action="/ideas/{{ $idea->id }}">
+    @csrf
+    @method('DELETE')
+</form>
+```
+
+**Ruta destroy:**
+
+```php
+Route::delete('/ideas/{idea}', function (Idea $idea) {
+    $idea->delete();
+    return redirect('/ideas');
+});
+```
+
+Al eliminar, redirige al listado `/ideas`. También con binding: `$idea` ya está resuelto por id en la URL.
 
 ### Comandos utilizados
 
@@ -942,28 +1014,36 @@ episodio-08: migraciones, modelo Idea, Eloquent y filtro por state
 php artisan route:list
 ```
 
-### Archivos modificados o creados
+### Archivos tocados
 
-- `routes/web.php`
-- `resources/views/ideas/*.blade.php`
+`routes/web.php`, `ideas/index.blade.php`, `ideas/show.blade.php`, `ideas/edit.blade.php`
 
 ### Evidencia
 
-![Episodio 09 — CRUD REST](./img/ep09-crud.png)
+![Show y binding](./img/ep09-show-findorfail.png)
+
+![Edit con PATCH](./img/ep09-edit-method-patch.png)
+
+![Update en navegador](./img/ep09-update-patch-route.png)
+
+![Delete con form separado y ruta destroy](./img/ep09-delete-destroy.png)
 
 ### Problemas y soluciones
 
-*[Pendiente]*
+- Crear usa `name="idea"`; editar usa `name="description"` — distinto nombre de campo en cada formulario.
+- Queda la ruta temporal `GET /delete-ideas` (`truncate`) del Ep. 08; se puede quitar al cerrar el CRUD.
 
 ### Comentarios personales
 
-*[Pendiente]*
+El patrón `form="id-del-otro-form"` permite dos acciones (update/delete) en una misma pantalla sin anidar forms, algo inválido en HTML.
 
 ### Commit Git
 
 ```
-episodio-09: CRUD RESTful para ideas
+episodio-09: REST, route model binding, PATCH update y DELETE destroy
 ```
+
+*(Commit pendiente — episodio en progreso.)*
 
 ---
 
