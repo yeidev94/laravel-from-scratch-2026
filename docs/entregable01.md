@@ -29,7 +29,7 @@
 | 12 | Form Request Classes | Completado | [Episodio 12](#episodio-12) |
 | 13 | A Brief DaisyUI Detour | Completado | [Episodio 13](#episodio-13) |
 | 14 | Authentication Explained | Completado | [Episodio 14](#episodio-14) |
-| 15 | Require Authentication With Middleware | Pendiente | [Episodio 15](#episodio-15) |
+| 15 | Require Authentication With Middleware | Completado | [Episodio 15](#episodio-15) |
 | 16 | Eloquent Relationships | Pendiente | [Episodio 16](#episodio-16) |
 
 ---
@@ -1513,37 +1513,109 @@ episodio-14: registro, login y logout de usuarios
 
 ### Resumen
 
-*[Pendiente: middleware auth/guest, user_id en ideas, Auth::id(), filtrar ideas por usuario.]*
+Se alteró la migración de `ideas` agregando **`user_id`** como foreign key hacia `users`. Las rutas se agruparon con middleware **`auth`** y **`guest`** para limitar el acceso según si hay sesión activa. Al crear ideas se asigna el usuario logeado con **`Auth::id()`** y el index filtra con query `where('user_id', Auth::id())`.
 
-### Comandos utilizados
+### Migración — foreign key `user_id`
 
 ```bash
 php artisan make:migration add_user_id_to_ideas_table
 php artisan migrate
 ```
 
-### Archivos modificados o creados
+```php
+Schema::table('ideas', function (Blueprint $table) {
+    $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
+});
+```
 
-- `database/migrations/xxxx_add_user_id_to_ideas_table.php`
-- `routes/web.php`
-- `app/Http/Controllers/IdeaController.php`
+Cada idea queda ligada a un usuario en BD (columna `user_id` visible en DBeaver).
+
+### Middleware — rutas `auth` y `guest`
+
+**`routes/web.php`**
+
+```php
+Route::middleware('auth')->group(function () {
+    // rutas /ideas/* y logout
+});
+
+Route::middleware('guest')->group(function () {
+    // register y login
+});
+```
+
+| Middleware | Comportamiento |
+|------------|----------------|
+| **`auth`** | Sin login → no accede a `/ideas`; redirect a login |
+| **`guest`** | Con login → no accede a register/login |
+
+### Crear idea — link al usuario logeado
+
+**`IdeaController::store()`**
+
+```php
+Idea::create([
+    'description' => $request->description,
+    'state' => 'pending',
+    'user_id' => Auth::id(),
+]);
+```
+
+### Filtrar ideas — solo las del usuario
+
+**`IdeaController::index()`**
+
+```php
+$ideas = Idea::query()->where([
+    'user_id' => Auth::id(),
+])->get();
+```
+
+En el navegador solo se listan ideas del usuario autenticado (p. ej. *"test an idea"*, *"john doe idea"*).
+
+### Dummy data con Tinker
+
+```bash
+php artisan tinker
+>>> User::factory()->create();
+```
+
+Genera usuarios de prueba en la tabla `users` para probar filtrado y ownership sin registrar manualmente.
+
+### Comandos utilizados
+
+```bash
+php artisan make:migration add_user_id_to_ideas_table
+php artisan migrate
+php artisan tinker
+```
+
+### Archivos tocados
+
+Migración `add_user_id_to_ideas_table`, `routes/web.php`, `IdeaController.php`
 
 ### Evidencia
 
-![Episodio 15 — middleware auth](./img/ep15-middleware.png)
+![Rutas auth/guest, ideas en nav y user_id en DBeaver](./img/ep15-routes-middleware.png)
+
+![store con Auth::id() y user_id en BD](./img/ep15-store-user-id.png)
+
+![Tinker User::factory()->create()](./img/ep15-tinker-factory.png)
+
+![index filtrado por user_id con query](./img/ep15-index-filter.png)
 
 ### Problemas y soluciones
 
-*[Pendiente]*
+No se reportaron errores. Tras migrar, las ideas nuevas guardan `user_id` y el listado respeta la sesión del usuario logeado.
 
 ### Comentarios personales
 
-*[Pendiente]*
+El filtrado con query prepara el Ep. 16, donde se reemplazará por relaciones Eloquent (`$user->ideas()`).
 
 ### Commit Git
 
 ```
-episodio-15: middleware de autenticación y user_id en ideas
+episodio-15: middleware auth/guest y user_id en ideas
 ```
 
 ---

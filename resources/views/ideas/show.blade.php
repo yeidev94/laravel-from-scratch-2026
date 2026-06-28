@@ -6,7 +6,7 @@
                 href="/ideas/{{$idea->id}}/edit"
                 class="btn"
             >
-                Save
+                Edit
             </a>
         </div>
     </div>

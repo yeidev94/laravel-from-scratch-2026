@@ -147,7 +147,8 @@ sudo chmod -R 775 storage bootstrap/cache
 | 12 | Form Request Classes | Completado |
 | 13 | A Brief DaisyUI Detour | Completado |
 | 14 | Authentication Explained | Completado |
-| 15–16 | Pendientes | — |
+| 15 | Require Authentication With Middleware | Completado |
+| 16 | Pendiente | — |
 
 ### Episodio 01 — Proyecto Laravel funcional
 
@@ -299,6 +300,20 @@ Registro, login, logout, `Hash::make`, `@auth`/`@guest`.
 ![Auth vs guest](docs/img/ep14-auth-guest-nav.png)
 
 ![Logout](docs/img/ep14-logout.png)
+
+### Episodio 15 — Require Authentication With Middleware
+
+[Ver documentación completa](docs/entregable01.md#episodio-15)
+
+FK `user_id`, middleware `auth`/`guest`, `Auth::id()` en store e index filtrado por usuario.
+
+![Rutas middleware](docs/img/ep15-routes-middleware.png)
+
+![Store user_id](docs/img/ep15-store-user-id.png)
+
+![Tinker factory](docs/img/ep15-tinker-factory.png)
+
+![Index filter](docs/img/ep15-index-filter.png)
 
 ---
 

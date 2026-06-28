@@ -54,6 +54,10 @@
 | `ep14-register-controller.png` | 14 | `RegisteredUserController` + `Hash::make` |
 | `ep14-auth-guest-nav.png` | 14 | `@auth` / `@guest` en nav |
 | `ep14-logout.png` | 14 | `SessionsController::destroy` + DELETE `/logout` |
+| `ep15-routes-middleware.png` | 15 | Grupos `auth`/`guest` + `user_id` en DBeaver |
+| `ep15-store-user-id.png` | 15 | `store()` con `Auth::id()` |
+| `ep15-tinker-factory.png` | 15 | `User::factory()->create()` en Tinker |
+| `ep15-index-filter.png` | 15 | `index()` filtrado por `user_id` |
 | `evidencia-registro.png` | 14 | **Obligatoria** — registro funcional |
 | `evidencia-login.png` | 14 | **Obligatoria** — sesión autenticada |
 | `evidencia-logout.png` | 14 | **Obligatoria** — logout y nav guest |
