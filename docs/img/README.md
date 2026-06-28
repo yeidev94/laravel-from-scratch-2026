@@ -44,16 +44,19 @@
 | `ep11-validate-store.png` | 11 | `$request->validate()` en `store()` |
 | `ep11-errors-feedback.png` | 11 | Error de validación en `/ideas/create` |
 | `ep11-error-component.png` | 11 | Componente `<x-forms.error>` con `@error` |
+| `ep12-make-request.png` | 12 | `php artisan make:request StoreIdeaRequest` |
+| `ep12-rules-controller.png` | 12 | `rules()` + type-hint en `store()` |
+| `ep12-messages-custom.png` | 12 | `messages()` y mensaje `:attribute is Required` |
 | `evidencia-crear.png` | 10 | **Obligatoria** — flujo create (index vacío + formulario) |
 | `evidencia-validacion.png` | 11 | **Obligatoria** — mensaje de error de validación |
+| `evidencia-editar.png` | 09 | **Obligatoria** — formulario edit (copia ep09-edit) |
+| `evidencia-actualizar.png` | 09 | **Obligatoria** — PATCH update (copia ep09-update) |
+| `evidencia-eliminar.png` | 09 | **Obligatoria** — DELETE destroy (copia ep09-delete) |
 
 ## Pendientes (evidencias obligatorias del entregable)
 
 | Archivo | Episodio |
 |---------|----------|
-| `evidencia-editar.png` | 09 |
-| `evidencia-actualizar.png` | 09 |
-| `evidencia-eliminar.png` | 09 |
 | `evidencia-registro.png` | 14 |
 | `evidencia-login.png` | 14 |
 | `evidencia-logout.png` | 14–15 |

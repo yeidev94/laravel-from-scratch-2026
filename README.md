@@ -144,7 +144,8 @@ sudo chmod -R 775 storage bootstrap/cache
 | 09 | HTTP Requests and REST | Completado |
 | 10 | Controllers | Completado |
 | 11 | Request Validation | Completado |
-| 12–16 | Pendientes | — |
+| 12 | Form Request Classes | Completado |
+| 13–16 | Pendientes | — |
 
 ### Episodio 01 — Proyecto Laravel funcional
 
@@ -258,6 +259,18 @@ CRUD movido de closures en `web.php` a `IdeaController` (Resource). Vista `creat
 ![Error en formulario](docs/img/ep11-errors-feedback.png)
 
 ![Componente error](docs/img/ep11-error-component.png)
+
+### Episodio 12 — Form Request Classes
+
+[Ver documentación completa](docs/entregable01.md#episodio-12)
+
+`StoreIdeaRequest` con `authorize()`, `rules()`, `messages()` y type-hint en `store()`.
+
+![make:request](docs/img/ep12-make-request.png)
+
+![rules y controlador](docs/img/ep12-rules-controller.png)
+
+![messages personalizados](docs/img/ep12-messages-custom.png)
 
 ---
 

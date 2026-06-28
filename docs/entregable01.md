@@ -26,7 +26,7 @@
 | 09 | HTTP Requests and REST | Completado | [Episodio 09](#episodio-09) |
 | 10 | Controllers | Completado | [Episodio 10](#episodio-10) |
 | 11 | Request Validation | Completado | [Episodio 11](#episodio-11) |
-| 12 | Form Request Classes | Pendiente | [Episodio 12](#episodio-12) |
+| 12 | Form Request Classes | Completado | [Episodio 12](#episodio-12) |
 | 13 | A Brief DaisyUI Detour | Pendiente | [Episodio 13](#episodio-13) |
 | 14 | Authentication Explained | Pendiente | [Episodio 14](#episodio-14) |
 | 15 | Require Authentication With Middleware | Pendiente | [Episodio 15](#episodio-15) |
@@ -1253,35 +1253,92 @@ episodio-11: validación required/min y componente x-forms.error
 
 ### Resumen
 
-*[Pendiente: StoreIdeaRequest, authorize(), rules(), type-hint en controlador.]*
+La validación del Ep. 11 se movió del controlador a **`StoreIdeaRequest`**: una clase dedicada que extiende `FormRequest`. Laravel ejecuta `authorize()` y `rules()` **antes** de entrar al método del controlador.
 
-### Comandos utilizados
+### Crear la clase
 
 ```bash
-php artisan make:request StoreIdeaRequest
+php artisan make:request
+# Name: StoreIdeaRequest
 ```
 
-### Archivos modificados o creados
+Genera `app/Http/Requests/StoreIdeaRequest.php`.
 
-- `app/Http/Requests/StoreIdeaRequest.php`
-- `app/Http/Controllers/IdeaController.php`
+### `StoreIdeaRequest`
+
+La clase extiende **`Illuminate\Foundation\Http\FormRequest`**, que a su vez implementa la lógica de **`Request`** + validación automática.
+
+| Método | Propósito |
+|--------|-----------|
+| `authorize()` | ¿El usuario puede hacer esta acción? (`true` / `false` o lógica con permisos) |
+| `rules()` | Reglas de validación (las mismas del Ep. 11) |
+| `messages()` | Mensajes personalizados por regla |
+
+```php
+public function authorize(): bool
+{
+    return true;  // más adelante: auth, policies, etc.
+}
+
+public function rules(): array
+{
+    return [
+        'description' => ['required', 'min:10'],
+    ];
+}
+
+public function messages(): array
+{
+    return [
+        'description.required' => ':attribute is Required',
+    ];
+}
+```
+
+En `messages()`, la clave es `campo.regla` (p. ej. `description.required`). El placeholder **`:attribute`** se sustituye por el nombre del campo validado.
+
+### Controlador — type-hint
+
+**`IdeaController::store()`** recibe la clase en lugar de `Request`:
+
+```php
+public function store(StoreIdeaRequest $request)
+{
+    Idea::create([
+        'description' => $request->description,
+        'state' => 'pending',
+    ]);
+
+    return redirect('/ideas');
+}
+```
+
+Ya no hace falta `$request->validate([...])` en el controlador — la Form Request lo hace sola. Si falla, redirige al formulario con `$errors` (igual que Ep. 11).
+
+### Archivos tocados
+
+`StoreIdeaRequest.php`, `IdeaController.php`
 
 ### Evidencia
 
-![Episodio 12 — form request](./img/ep12-form-request.png)
+![make:request StoreIdeaRequest](./img/ep12-make-request.png)
+
+![rules() y type-hint en store()](./img/ep12-rules-controller.png)
+
+![messages() y mensaje personalizado en el navegador](./img/ep12-messages-custom.png)
 
 ### Problemas y soluciones
 
-*[Pendiente]*
+No se presentaron errores. El `$request->validate()` inline quedó comentado en el controlador como referencia del refactor.
 
 ### Comentarios personales
 
-*[Pendiente]*
+Separar validación y autorización en Form Requests deja el controlador más limpio. `authorize()` será útil en Ep. 15–16 cuando las ideas pertenezcan a un usuario autenticado.
 
 ### Commit Git
 
 ```
-episodio-12: clases Form Request para validación
+episodio-12: StoreIdeaRequest con rules y messages personalizados
 ```
 
 ---
