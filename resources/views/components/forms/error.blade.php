@@ -8,5 +8,5 @@
     @endif --}}
 
     @error($name)
-        <p class="text-xs text-red-500">{{ $message }}</p>
+        <p class="text-xs text-error">{{ $message }}</p>
     @enderror

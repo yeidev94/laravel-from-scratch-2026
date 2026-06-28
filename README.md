@@ -145,7 +145,8 @@ sudo chmod -R 775 storage bootstrap/cache
 | 10 | Controllers | Completado |
 | 11 | Request Validation | Completado |
 | 12 | Form Request Classes | Completado |
-| 13–16 | Pendientes | — |
+| 13 | A Brief DaisyUI Detour | Completado |
+| 14–16 | Pendientes | — |
 
 ### Episodio 01 — Proyecto Laravel funcional
 
@@ -271,6 +272,18 @@ CRUD movido de closures en `web.php` a `IdeaController` (Resource). Vista `creat
 ![rules y controlador](docs/img/ep12-rules-controller.png)
 
 ![messages personalizados](docs/img/ep12-messages-custom.png)
+
+### Episodio 13 — A Brief DaisyUI Detour
+
+[Ver documentación completa](docs/entregable01.md#episodio-13)
+
+CDN DaisyUI + Tailwind, tema `black`, navbar, `idea-card` y clases `textarea`/`btn`.
+
+![Create DaisyUI](docs/img/ep13-create-daisyui.png)
+
+![Index idea-card](docs/img/ep13-index-idea-card.png)
+
+![Layout CDN](docs/img/ep13-layout-cdn.png)
 
 ---
 

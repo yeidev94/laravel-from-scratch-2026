@@ -47,6 +47,9 @@
 | `ep12-make-request.png` | 12 | `php artisan make:request StoreIdeaRequest` |
 | `ep12-rules-controller.png` | 12 | `rules()` + type-hint en `store()` |
 | `ep12-messages-custom.png` | 12 | `messages()` y mensaje `:attribute is Required` |
+| `ep13-create-daisyui.png` | 13 | Create con `textarea`, `btn` y `textarea-error` |
+| `ep13-index-idea-card.png` | 13 | Index con `<x-idea-card>` en grid |
+| `ep13-layout-cdn.png` | 13 | CDN DaisyUI + `data-theme="black"` en layout |
 | `evidencia-crear.png` | 10 | **Obligatoria** — flujo create (index vacío + formulario) |
 | `evidencia-validacion.png` | 11 | **Obligatoria** — mensaje de error de validación |
 | `evidencia-editar.png` | 09 | **Obligatoria** — formulario edit (copia ep09-edit) |

@@ -27,7 +27,7 @@
 | 10 | Controllers | Completado | [Episodio 10](#episodio-10) |
 | 11 | Request Validation | Completado | [Episodio 11](#episodio-11) |
 | 12 | Form Request Classes | Completado | [Episodio 12](#episodio-12) |
-| 13 | A Brief DaisyUI Detour | Pendiente | [Episodio 13](#episodio-13) |
+| 13 | A Brief DaisyUI Detour | Completado | [Episodio 13](#episodio-13) |
 | 14 | Authentication Explained | Pendiente | [Episodio 14](#episodio-14) |
 | 15 | Require Authentication With Middleware | Pendiente | [Episodio 15](#episodio-15) |
 | 16 | Eloquent Relationships | Pendiente | [Episodio 16](#episodio-16) |
@@ -1347,38 +1347,80 @@ episodio-12: StoreIdeaRequest con rules y messages personalizados
 
 ### Resumen
 
-*[Pendiente: Tailwind + DaisyUI, componentes nav e idea-card, mejora visual.]*
+Se integró **DaisyUI** (componentes sobre Tailwind) vía **CDN** en el layout y se reemplazaron clases manuales por utilidades DaisyUI + Tailwind en create, index, nav y tarjetas de ideas. Tema oscuro con `data-theme="black"`.
 
-### Comandos utilizados
+Sitio: [daisyui.com](https://daisyui.com)
 
-```bash
-npm install
-npm run dev
+### CDN en `layout.blade.php`
+
+```html
+<html lang="en" data-theme="black">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <x-nav />
+    <main class="max-w-3xl mx-auto mt-6">{{ $slot }}</main>
+</body>
 ```
 
-### Archivos modificados o creados
+### Componentes nuevos
 
-- `resources/views/components/nav.blade.php`
-- `resources/views/components/idea-card.blade.php`
-- `resources/views/ideas/index.blade.php`
-- `resources/css/app.css`
+**`nav.blade.php`** — navbar DaisyUI (`navbar`, `menu`, `btn-ghost`) con links a `/ideas` y `/ideas/create`.
+
+**`idea-card.blade.php`** — tarjeta reutilizable:
+
+```blade
+<a {{ $attributes->merge(['class' => 'card text-neutral-content w-96']) }}>
+    <div class="card-body">
+        <p class="text-blue-950">{{ $slot }}</p>
+    </div>
+</a>
+```
+
+### Clases DaisyUI en vistas
+
+| Vista | Clases |
+|-------|--------|
+| `create.blade.php` | `textarea`, `textarea-error` (con `@error`), `btn` |
+| `index.blade.php` | grid Tailwind + `<x-idea-card>` |
+| `show.blade.php` | `card`, `btn` |
+
+Ejemplo create — error visual en el textarea:
+
+```blade
+<textarea name="description" class="textarea w-full @error('description') textarea-error @enderror">
+    {{ old('description') }}
+</textarea>
+<button type="submit" class="btn">Save</button>
+```
+
+### Archivos tocados
+
+`layout.blade.php`, `nav.blade.php`, `idea-card.blade.php`, `ideas/create.blade.php`, `ideas/index.blade.php`, `ideas/show.blade.php`
 
 ### Evidencia
 
-![Episodio 13 — DaisyUI](./img/ep13-daisyui.png)
+![Create con textarea y btn DaisyUI](./img/ep13-create-daisyui.png)
+
+![Index con idea-card](./img/ep13-index-idea-card.png)
+
+![Layout con CDN y data-theme](./img/ep13-layout-cdn.png)
 
 ### Problemas y soluciones
 
-*[Pendiente]*
+En `create.blade.php` faltaba `name="description"` en el textarea (rompía el envío del formulario). Se corrigió junto con `w-full` (typo `2-full`) y el cierre de `</ul>` en index.
 
 ### Comentarios personales
 
-*[Pendiente]*
+DaisyUI acelera la UI sin escribir CSS custom; el CDN es suficiente para el curso. El botón Register en nav queda preparado para el Ep. 14 (Authentication).
 
 ### Commit Git
 
 ```
-episodio-13: estilos con Tailwind y DaisyUI
+episodio-13: DaisyUI CDN, navbar e idea-card
 ```
 
 ---
