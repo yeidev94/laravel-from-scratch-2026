@@ -28,7 +28,7 @@
 | 11 | Request Validation | Completado | [Episodio 11](#episodio-11) |
 | 12 | Form Request Classes | Completado | [Episodio 12](#episodio-12) |
 | 13 | A Brief DaisyUI Detour | Completado | [Episodio 13](#episodio-13) |
-| 14 | Authentication Explained | Pendiente | [Episodio 14](#episodio-14) |
+| 14 | Authentication Explained | Completado | [Episodio 14](#episodio-14) |
 | 15 | Require Authentication With Middleware | Pendiente | [Episodio 15](#episodio-15) |
 | 16 | Eloquent Relationships | Pendiente | [Episodio 16](#episodio-16) |
 
@@ -1429,35 +1429,77 @@ episodio-13: DaisyUI CDN, navbar e idea-card
 
 ### Resumen
 
-*[Pendiente: registro, login, controladores de sesión, Hash, @auth/@guest, logout.]*
+Autenticación manual: **registro**, **login** y **logout** con `RegisteredUserController` y `SessionsController` en `Auth/`. Validación inline, `Hash::make()` en el password, `Auth::login()` / `Auth::attempt()` y nav condicional con `@auth` / `@guest`.
 
-### Comandos utilizados
+### Controladores
 
 ```bash
-php artisan make:controller RegisteredUserController
-php artisan make:controller SessionsController
-php artisan migrate
+php artisan make:controller Auth/RegisteredUserController
+php artisan make:controller Auth/SessionsController
+php artisan migrate   # tabla users
 ```
 
-### Archivos modificados o creados
+**Registro — `RegisteredUserController::store()`**
 
-- `app/Http/Controllers/RegisteredUserController.php`
-- `app/Http/Controllers/SessionsController.php`
-- `routes/web.php`
-- `resources/views/auth/*.blade.php`
-- `resources/views/components/nav.blade.php`
+1. Validar `name`, `email` (unique), `password`
+2. Crear usuario en BD con **`Hash::make($request->password)`**
+3. `Auth::login($user)`
+4. `redirect('/ideas')`
+
+**Sesiones — `SessionsController`**
+
+| Método | Ruta | Acción |
+|--------|------|--------|
+| `create()` | GET `/login` | Vista login |
+| `store()` | POST `/login` | `Auth::attempt()` → `session()->regenerate()` |
+| `destroy()` | DELETE `/logout` | `Auth::logout()` → redirect |
+
+Si las credenciales fallan en login:
+
+```php
+return back()->withErrors([
+    'email' => 'The provided credentials do not match our records.',
+]);
+```
+
+### Rutas (`web.php`)
+
+```php
+Route::get('/register', [RegisteredUserController::class, 'create']);
+Route::post('/register', [RegisteredUserController::class, 'store']);
+Route::get('/login', [SessionsController::class, 'create']);
+Route::post('/login', [SessionsController::class, 'store']);
+Route::delete('/logout', [SessionsController::class, 'destroy']);
+```
+
+### Vistas y nav
+
+- `auth/register.blade.php` — name, email, password (DaisyUI fieldset)
+- `auth/login.blade.php` — email, password + `<x-forms.error>`
+
+**`nav.blade.php`** — `@guest` muestra Register/Login; `@auth` muestra formulario Log Out (POST + `@method('DELETE')`).
+
+### Archivos tocados
+
+`Auth/RegisteredUserController.php`, `Auth/SessionsController.php`, `auth/register.blade.php`, `auth/login.blade.php`, `nav.blade.php`, `routes/web.php`
 
 ### Evidencia
 
-![Episodio 14 — autenticación](./img/ep14-auth.png)
+![Register — formulario y Network 302→200](./img/ep14-register-network.png)
+
+![RegisteredUserController store + Hash](./img/ep14-register-controller.png)
+
+![Sesión autenticada vs guest (@auth/@guest)](./img/ep14-auth-guest-nav.png)
+
+![Logout — destroy, ruta DELETE y nav sin sesión](./img/ep14-logout.png)
 
 ### Problemas y soluciones
 
-*[Pendiente]*
+Endpoint de registro responde **302** (redirect) y `/ideas` **200 OK** tras crear usuario. Password almacenado hasheado en la tabla `users`.
 
 ### Comentarios personales
 
-*[Pendiente]*
+Las ideas siguen siendo globales hasta el Ep. 15, donde se protegerán rutas con middleware `auth` y se asociará `user_id`.
 
 ### Commit Git
 

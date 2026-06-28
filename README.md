@@ -146,7 +146,8 @@ sudo chmod -R 775 storage bootstrap/cache
 | 11 | Request Validation | Completado |
 | 12 | Form Request Classes | Completado |
 | 13 | A Brief DaisyUI Detour | Completado |
-| 14–16 | Pendientes | — |
+| 14 | Authentication Explained | Completado |
+| 15–16 | Pendientes | — |
 
 ### Episodio 01 — Proyecto Laravel funcional
 
@@ -284,6 +285,20 @@ CDN DaisyUI + Tailwind, tema `black`, navbar, `idea-card` y clases `textarea`/`b
 ![Index idea-card](docs/img/ep13-index-idea-card.png)
 
 ![Layout CDN](docs/img/ep13-layout-cdn.png)
+
+### Episodio 14 — Authentication Explained
+
+[Ver documentación completa](docs/entregable01.md#episodio-14)
+
+Registro, login, logout, `Hash::make`, `@auth`/`@guest`.
+
+![Register](docs/img/ep14-register-network.png)
+
+![Controller](docs/img/ep14-register-controller.png)
+
+![Auth vs guest](docs/img/ep14-auth-guest-nav.png)
+
+![Logout](docs/img/ep14-logout.png)
 
 ---
 

@@ -50,19 +50,22 @@
 | `ep13-create-daisyui.png` | 13 | Create con `textarea`, `btn` y `textarea-error` |
 | `ep13-index-idea-card.png` | 13 | Index con `<x-idea-card>` en grid |
 | `ep13-layout-cdn.png` | 13 | CDN DaisyUI + `data-theme="black"` en layout |
+| `ep14-register-network.png` | 14 | Register + Network 302→200 |
+| `ep14-register-controller.png` | 14 | `RegisteredUserController` + `Hash::make` |
+| `ep14-auth-guest-nav.png` | 14 | `@auth` / `@guest` en nav |
+| `ep14-logout.png` | 14 | `SessionsController::destroy` + DELETE `/logout` |
+| `evidencia-registro.png` | 14 | **Obligatoria** — registro funcional |
+| `evidencia-login.png` | 14 | **Obligatoria** — sesión autenticada |
+| `evidencia-logout.png` | 14 | **Obligatoria** — logout y nav guest |
 | `evidencia-crear.png` | 10 | **Obligatoria** — flujo create (index vacío + formulario) |
 | `evidencia-validacion.png` | 11 | **Obligatoria** — mensaje de error de validación |
-| `evidencia-editar.png` | 09 | **Obligatoria** — formulario edit (copia ep09-edit) |
-| `evidencia-actualizar.png` | 09 | **Obligatoria** — PATCH update (copia ep09-update) |
-| `evidencia-eliminar.png` | 09 | **Obligatoria** — DELETE destroy (copia ep09-delete) |
+| `evidencia-editar.png` | 09 | **Obligatoria** — formulario edit |
+| `evidencia-actualizar.png` | 09 | **Obligatoria** — PATCH update |
+| `evidencia-eliminar.png` | 09 | **Obligatoria** — DELETE destroy |
 
 ## Pendientes (evidencias obligatorias del entregable)
 
-| Archivo | Episodio |
-|---------|----------|
-| `evidencia-registro.png` | 14 |
-| `evidencia-login.png` | 14 |
-| `evidencia-logout.png` | 14–15 |
+*Ninguna — las 12 evidencias obligatorias están completas.*
 
 ## Sintaxis en Markdown
 
