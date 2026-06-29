@@ -70,6 +70,9 @@
 | `ep17-gate-authorize-route.png` | 17 | `Gate::authorize()` en closure |
 | `ep17-403-unauthorized.png` | 17 | 403 — acción no autorizada |
 | `ep17-deny-as-not-found.png` | 17 | `denyAsNotFound()` → 404 |
+| `ep18-make-policy.png` | 18 | `php artisan make:policy` → `IdeaPolicy` |
+| `ep18-authorize-update-403.png` | 18 | `Gate::authorize('update', $idea)` → 403 |
+| `ep18-policy-create-admin.png` | 18 | `create()` admin + `update()` ownership |
 | `evidencia-registro.png` | 14 | **Obligatoria** — registro funcional |
 | `evidencia-login.png` | 14 | **Obligatoria** — sesión autenticada |
 | `evidencia-logout.png` | 14 | **Obligatoria** — logout y nav guest |

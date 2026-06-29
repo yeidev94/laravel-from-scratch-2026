@@ -42,7 +42,7 @@ Route::middleware('guest')->group(function () {
 
 Route::delete('/logout', [SessionsController::class, 'destroy']);
 
-Route::get('/admin', function(){
-    Gate::authorize('view-admin');
-    return 'private admin area';
-});
+// Route::get('/admin', function(){
+//     Gate::authorize('view-admin');
+//     return 'private admin area';
+// });

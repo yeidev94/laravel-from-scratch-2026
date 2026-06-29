@@ -21,7 +21,7 @@ En este entregable se documenta la autorización con Gates y Policies, el empaqu
 | # | Episodio | Estado | Enlace |
 |---|----------|--------|--------|
 | 17 | Authorization Using Gates | Completado | [Episodio 17](#episodio-17) |
-| 18 | Authorization Using Policies | Pendiente | [Episodio 18](#episodio-18) |
+| 18 | Authorization Using Policies | Completado | [Episodio 18](#episodio-18) |
 | 19 | Frontend Asset Bundling with Vite | Pendiente | — |
 | 20 | Notifications | Pendiente | — |
 | 21 | When to Queue it Up | Pendiente | — |
@@ -180,39 +180,111 @@ episodio-17: autorización con Gates y view-admin
 
 ---
 
-## Episodio 18: Authorization Using Policies
+## Episodio 18: Authorization Using Policies {#episodio-18}
 
 ### Resumen
 
-*[Pendiente]*
+Una **Policy** centraliza reglas de autorización **por modelo** (`Idea`). Laravel la genera con Artisan y la aplica en controladores con `Gate::authorize()`, `Auth::user()->can()` o `@can` en Blade. Se protegió **show** para que solo el dueño vea su idea y **create** para exigir admin.
 
-### Comandos utilizados
+### ¿Qué es una Policy?
+
+| Concepto | Gate (Ep. 17) | Policy (Ep. 18) |
+|----------|-----------------|-----------------|
+| Alcance | Reglas globales (`view-admin`) | Reglas por modelo (`Idea`) |
+| Ubicación | `AppServiceProvider` | `app/Policies/IdeaPolicy.php` |
+| Métodos | Un closure por ability | `view`, `update`, `create`, `delete`, etc. |
+
+Laravel mapea automáticamente `Idea` → `IdeaPolicy`.
+
+### Crear la Policy
 
 ```bash
-php artisan make:policy IdeaPolicy --model=Idea
+php artisan make:policy
+# Name: IdeaPolicy
+# Model: Idea
 ```
 
-### Archivos modificados o creados
+Genera `app/Policies/IdeaPolicy.php` con stubs: `viewAny`, `view`, `create`, `update`, `delete`…
 
-- `app/Policies/IdeaPolicy.php`
-- `app/Http/Controllers/IdeaController.php`
+### Reglas en `IdeaPolicy`
+
+**Solo el dueño puede ver/editar su idea:**
+
+```php
+public function update(User $user, Idea $idea): bool
+{
+    return $user->is($idea->user);
+    // equivalente: $user->id === $idea->user_id
+}
+```
+
+**Solo admin puede crear ideas:**
+
+```php
+public function create(User $user): bool
+{
+    return $user->isAdmin();
+}
+```
+
+(`isAdmin()` en el modelo `User` — p. ej. `$user->id === 1` o columna `role`.)
+
+### Usar en el controlador
+
+**Opción 1 — `Gate::authorize()`** (en `show`):
+
+```php
+public function show(Idea $idea)
+{
+    Gate::authorize('update', $idea);
+
+    return view('ideas.show', ['idea' => $idea]);
+}
+```
+
+Si el usuario no es dueño → **403 This action is unauthorized**.
+
+**Opción 2 — `Auth::user()->can()`**
+
+```php
+if (Auth::user()->can('update', $idea)) {
+    // permitido
+}
+```
+
+Laravel resuelve la Policy según el tipo del segundo argumento (`$idea`).
+
+### Resultados probados
+
+| Escenario | Resultado |
+|-----------|-----------|
+| Usuario accede a idea ajena (`/ideas/4`) | 403 |
+| No-admin visita `/ideas/create` | 404 (si se enmascara con gate/policy + `denyAsNotFound`) |
+
+### Archivos tocados
+
+`IdeaPolicy.php`, `IdeaController.php` (`show`), `User.php` (`isAdmin()` si aplica)
 
 ### Evidencia
 
-![Episodio 18](./img/ep18-policies.png)
+![make:policy IdeaPolicy generado](./img/ep18-make-policy.png)
+
+![Gate::authorize update y 403 en idea ajena](./img/ep18-authorize-update-403.png)
+
+![Policy create admin + update ownership](./img/ep18-policy-create-admin.png)
 
 ### Problemas y soluciones
 
-*[Pendiente]*
+No se reportaron errores. La policy bloquea correctamente acceso a ideas de otros usuarios.
 
 ### Comentarios personales
 
-*[Pendiente]*
+Policies escalan mejor que Gates cuando la autorización depende del **recurso** (modelo + usuario). El Ep. 19 pasa a Vite para assets frontend.
 
 ### Commit Git
 
 ```
-episodio-18: IdeaPolicy y autorización en controlador
+episodio-18: IdeaPolicy ownership y create solo admin
 ```
 
 ---

@@ -347,6 +347,16 @@ Episodios **01–16** documentados en [docs/entregable01.md](docs/entregable01.m
 
 ![404 deny](docs/img/ep17-deny-as-not-found.png)
 
+### Entregable 02 — Episodio 18: Authorization Using Policies
+
+[Ver documentación](docs/entregable02.md#episodio-18)
+
+![make policy](docs/img/ep18-make-policy.png)
+
+![403 update](docs/img/ep18-authorize-update-403.png)
+
+![create admin](docs/img/ep18-policy-create-admin.png)
+
 ---
 
 ## Control de versiones
