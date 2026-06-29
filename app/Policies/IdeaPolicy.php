@@ -19,9 +19,13 @@ class IdeaPolicy
         return $user->is($idea->user);
     }
 
-    // public function create(User $user): bool
-    // {
-    //     return $user->isAdmin();
-    // }
+    public function create(User $user): bool
+    {
+        return true;
+    }
 
+    public function delete(User $user, Idea $idea): bool
+    {
+        return $user->is($idea->user);
+    }
 }

@@ -7,6 +7,7 @@
 
 @plugin "daisyui" {
     themes: black --default;
+    data-theme: black --default;
 }
 
 @theme {

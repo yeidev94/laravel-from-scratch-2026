@@ -23,7 +23,7 @@ En este entregable se documenta la autorización con Gates y Policies, el empaqu
 | 17 | Authorization Using Gates | Completado | [Episodio 17](#episodio-17) |
 | 18 | Authorization Using Policies | Completado | [Episodio 18](#episodio-18) |
 | 19 | Frontend Asset Bundling with Vite | Completado | [Episodio 19](#episodio-19) |
-| 20 | Notifications | Pendiente | — |
+| 20 | Notifications | Completado | [Episodio 20](#episodio-20) |
 | 21 | When to Queue it Up | Pendiente | — |
 | 22 | How to Get Started Testing Your Code | Pendiente | — |
 | 23 | Final Project Setup | Pendiente | — |
@@ -468,39 +468,119 @@ episodio-19: empaquetado de assets con Vite
 
 ---
 
-## Episodio 20: Notifications
+## Episodio 20: Notifications {#episodio-20}
 
 ### Resumen
 
-*[Pendiente]*
+Sistema de **notificaciones** completo: tabla `notifications`, `Notifiable` en `User`, clase **`IdeaPublished`** (canal `mail`), **Mailpit** en desarrollo y envío automático al **publicar una idea** desde `IdeaController::store()`.
 
-### Comandos utilizados
+### Tabla de notificaciones
+
+```bash
+php artisan make:notifications-table
+php artisan migrate
+```
+
+Crea la migración `create_notifications_table` y la tabla en BD para notificaciones **database** (opcional) además del canal mail.
+
+### Colección `$user->notifications` — Tinker
+
+El modelo `User` usa `Notifiable`. En Tinker:
+
+```bash
+php artisan tinker
+>>> App\Models\User::first()->notifications;
+```
+
+Retorna `DatabaseNotificationCollection` — vacía (`all: []`) hasta que se registren notificaciones en canal `database`. Confirma que la relación existe.
+
+### Clase `IdeaPublished`
 
 ```bash
 php artisan make:notification IdeaPublished
 ```
 
-### Archivos modificados o creados
+Canal **`mail`** vía `via()` → `toMail()` con `MailMessage` (greeting, líneas, action *Read It*).
 
-- `app/Notifications/IdeaPublished.php`
-- `app/Http/Controllers/IdeaController.php`
+### Enviar notificación — Tinker
+
+```php
+$john = App\Models\User::first();
+$john->notify(new App\Notifications\IdeaPublished(App\Models\Idea::latest()->first()));
+```
+
+### Mail en desarrollo — `.env` + Mailpit
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=127.0.0.1
+MAIL_PORT=1025
+MAIL_FROM_ADDRESS="admin@lfts.local"
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+Mailpit escucha SMTP en **1025**; UI web en **`http://192.168.33.10:8025`**. El correo *Idea Published* llega al email del usuario con asunto y cuerpo de Laravel.
+
+### Integración en la app — `IdeaController::store()`
+
+Tras crear la idea, se notifica al usuario autenticado:
+
+```php
+$idea = Auth::user()->ideas()->create([
+    'description' => $request->description,
+    'state' => 'pending',
+    'user_id' => Auth::id(),
+]);
+
+Auth::user()->notify(new IdeaPublished($idea));
+
+return redirect('/ideas');
+```
+
+Flujo: formulario create → `store()` → idea en BD → correo en Mailpit.
+
+| Componente | Rol |
+|------------|-----|
+| `IdeaPublished` | Define qué se envía |
+| `$user->notify()` | Dispara la notificación (Tinker o controller) |
+| Mailpit | Servidor de correo local — captura mail en dev |
+| `store()` | Envío automático al publicar idea |
+
+### Comandos utilizados
+
+```bash
+php artisan make:notifications-table
+php artisan migrate
+php artisan make:notification IdeaPublished
+php artisan tinker
+```
+
+### Archivos tocados
+
+Migración `create_notifications_table`, `User.php` (`Notifiable`), `IdeaPublished.php`, `IdeaController.php` (`store`), `.env` (mail)
 
 ### Evidencia
 
-![Episodio 20](./img/ep20-notifications.png)
+![make:notifications-table y migrate](./img/ep20-notifications-migrate.png)
+
+![Tinker — User::first()->notifications](./img/ep20-tinker-notifications.png)
+
+![Mailpit — IdeaPublished por correo](./img/ep20-mailpit-ideapublished.png)
+
+![store() — notify al crear idea](./img/ep20-controller-notify.png)
 
 ### Problemas y soluciones
 
-*[Pendiente]*
+En Tinker, salir con `exit` o Ctrl+D — no usar `q!` (provoca parse error en PsySH). Mailpit debe estar corriendo en la VM para ver correos en `:8025`.
 
 ### Comentarios personales
 
-*[Pendiente]*
+Episodio cerrado con flujo end-to-end: app + servidor de correos local. En el Ep. 21 se encolarán notificaciones con `ShouldQueue` y `queue:work`.
 
 ### Commit Git
 
 ```
-episodio-20: notificaciones al publicar idea
+episodio-20: notificaciones IdeaPublished y Mailpit
 ```
 
 ---

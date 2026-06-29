@@ -74,6 +74,10 @@
 | `ep18-authorize-update-403.png` | 18 | `Gate::authorize('update', $idea)` → 403 |
 | `ep18-policy-create-admin.png` | 18 | `create()` admin + `update()` ownership |
 | `ep19-vite.png` | 19 | Vite + Tailwind + DaisyUI bundled; layout sin CDN; login en `lfts.local` |
+| `ep20-notifications-migrate.png` | 20 | `make:notifications-table` + `migrate` |
+| `ep20-tinker-notifications.png` | 20 | `User::first()->notifications` en Tinker |
+| `ep20-mailpit-ideapublished.png` | 20 | `.env` mail + `notify()` + Mailpit |
+| `ep20-controller-notify.png` | 20 | `store()` + `Auth::user()->notify(IdeaPublished)` |
 | `evidencia-registro.png` | 14 | **Obligatoria** — registro funcional |
 | `evidencia-login.png` | 14 | **Obligatoria** — sesión autenticada |
 | `evidencia-logout.png` | 14 | **Obligatoria** — logout y nav guest |

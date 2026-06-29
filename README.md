@@ -363,6 +363,18 @@ Episodios **01–16** documentados en [docs/entregable01.md](docs/entregable01.m
 
 ![Vite bundling y DaisyUI en lfts.local](docs/img/ep19-vite.png)
 
+### Entregable 02 — Episodio 20: Notifications
+
+[Ver documentación](docs/entregable02.md#episodio-20)
+
+![Migrate notifications](docs/img/ep20-notifications-migrate.png)
+
+![Tinker notifications](docs/img/ep20-tinker-notifications.png)
+
+![Mailpit](docs/img/ep20-mailpit-ideapublished.png)
+
+![Notify en store](docs/img/ep20-controller-notify.png)
+
 ---
 
 ## Control de versiones
