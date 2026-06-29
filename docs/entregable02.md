@@ -22,7 +22,7 @@ En este entregable se documenta la autorización con Gates y Policies, el empaqu
 |---|----------|--------|--------|
 | 17 | Authorization Using Gates | Completado | [Episodio 17](#episodio-17) |
 | 18 | Authorization Using Policies | Completado | [Episodio 18](#episodio-18) |
-| 19 | Frontend Asset Bundling with Vite | Pendiente | — |
+| 19 | Frontend Asset Bundling with Vite | Completado | [Episodio 19](#episodio-19) |
 | 20 | Notifications | Pendiente | — |
 | 21 | When to Queue it Up | Pendiente | — |
 | 22 | How to Get Started Testing Your Code | Pendiente | — |
@@ -289,36 +289,176 @@ episodio-18: IdeaPolicy ownership y create solo admin
 
 ---
 
-## Episodio 19: Frontend Asset Bundling with Vite
+## Episodio 19: Frontend Asset Bundling with Vite {#episodio-19}
 
 ### Resumen
 
-*[Pendiente: @vite, resources/css/app.css, npm run dev / npm run build.]*
+Se migró el frontend del **CDN** (Tailwind browser + DaisyUI por `<link>`) al **empaquetado local con Vite**. Tailwind CSS 4, DaisyUI 5 y la fuente Instrument Sans se compilan en `resources/css/app.css` y se cargan en el layout con la directiva `@vite`.
+
+El acceso a la app sigue siendo por **Apache** (`http://lfts.local`), no por `php artisan serve` ni por el dev server de Vite. El flujo de desarrollo usa `npm run build` / `npm run watch` y **refresh manual** en el navegador (F5).
+
+### Dependencias — `package.json`
+
+```json
+"devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "daisyui": "^5.6.3",
+    "laravel-vite-plugin": "^3.1",
+    "tailwindcss": "^4.0.0",
+    "vite": "^8.0.0"
+}
+```
+
+Scripts npm:
+
+| Comando | Uso |
+|---------|-----|
+| `npm run build` | Compila assets a `public/build/` (producción o primera vez) |
+| `npm run watch` | Recompila al guardar cambios en CSS/JS (desarrollo con Apache) |
+| `npm run dev` | Dev server de Vite (no requerido con Apache) |
+
+### CSS — `resources/css/app.css`
+
+```css
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@plugin "daisyui" {
+    themes: black --default;
+}
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, ...;
+}
+```
+
+- `@import 'tailwindcss'` — Tailwind CSS 4 vía Vite.
+- `@source` — indica a Tailwind qué archivos escanear para clases (Blade, JS).
+- `@plugin "daisyui"` — integra DaisyUI; tema `black` como predeterminado.
+- `@theme` — fuente personalizada (Instrument Sans vía `laravel-vite-plugin/fonts`).
+
+**Temas personalizados:** DaisyUI 5 permite definir temas propios con `@plugin "daisyui/theme" { name: "mitema"; --color-primary: ...; }` en el mismo archivo CSS.
+
+### Layout — `resources/views/components/layout.blade.php`
+
+**Antes (Ep. 13 — CDN):**
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" />
+<style>/* CSS manual .card, .max-w-400 */</style>
+```
+
+**Después (Ep. 19 — Vite):**
+
+```blade
+<html lang="en" data-theme="black">
+<head>
+    <title>{{ $title }}</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body>
+    <x-nav />
+    <main class="max-w-3xl mx-auto mt-6">{{ $slot }}</main>
+</body>
+```
+
+Se eliminaron los CDN, el `<style>` manual que pisaba las clases `.card` de DaisyUI, y se mantuvo `data-theme="black"`.
+
+### Vite — `vite.config.js`
+
+```js
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+import { bunny } from 'laravel-vite-plugin/fonts';
+import tailwindcss from '@tailwindcss/vite';
+
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: ['resources/css/app.css', 'resources/js/app.js'],
+            refresh: [
+                'resources/views/**',
+                'routes/**',
+                'app/View/Components/**',
+            ],
+            fonts: [
+                bunny('Instrument Sans', { weights: [400, 500, 600] }),
+            ],
+        }),
+        tailwindcss(),
+    ],
+});
+```
+
+`refresh` vigila vistas y rutas (útil si se usa `npm run dev`). Con Apache se prioriza `npm run watch` + F5.
+
+### Flujo de trabajo con Apache
+
+```bash
+cd ~/sites/laravel-from-scratch-2026
+
+npm install          # primera vez
+npm run build        # compilar assets
+npm run watch        # terminal abierta mientras desarrollas
+```
+
+1. Apache sirve la app en `http://lfts.local`.
+2. `@vite` lee el manifiesto en `public/build/manifest.json`.
+3. Tras cambiar CSS/Blade, `watch` recompila; refrescas el navegador manualmente.
+4. Si existe `public/hot` (de un `npm run dev` anterior), eliminarlo para forzar el uso del build.
+
+### Comparación Ep. 13 → Ep. 19
+
+| Aspecto | Ep. 13 (CDN) | Ep. 19 (Vite) |
+|---------|--------------|---------------|
+| Tailwind | CDN `@tailwindcss/browser` | `@import 'tailwindcss'` + Vite |
+| DaisyUI | CDN `<link>` | `@plugin "daisyui"` en CSS |
+| Carga en layout | `<script>` + `<link>` | `@vite([...])` |
+| Tema | `data-theme="black"` | Igual + `themes: black --default` |
+| Desarrollo | Sin build | `npm run watch` + F5 |
 
 ### Comandos utilizados
 
 ```bash
-npm run dev
+npm install
 npm run build
+npm run watch
 ```
 
 ### Archivos modificados o creados
 
-- `vite.config.js`
-- `resources/css/app.css`
-- `resources/views/components/layout.blade.php`
+- `package.json` — dependencia `daisyui`, script `watch`
+- `package-lock.json`
+- `vite.config.js` — Tailwind, DaisyUI, refresh, fuente Instrument Sans
+- `resources/css/app.css` — Tailwind 4 + DaisyUI + `@theme`
+- `resources/js/app.js` — entry point de Vite
+- `resources/views/components/layout.blade.php` — `@vite`, sin CDN
+- `.env.example` — `APP_URL=http://lfts.local`
+- `docs/entregable02.md` — documentación del episodio
+- `docs/img/ep19-vite.png` — evidencia
 
 ### Evidencia
 
-![Episodio 19](./img/ep19-vite.png)
+![Vite bundling: package.json, app.css, layout sin CDN y login con DaisyUI en lfts.local](./img/ep19-vite.png)
 
 ### Problemas y soluciones
 
-*[Pendiente]*
+| Problema | Causa | Solución |
+|----------|-------|----------|
+| Estilos DaisyUI no cargan | CDN removido pero sin `npm run build` | Ejecutar `npm run build` o `npm run watch` |
+| Sigue buscando dev server | Archivo `public/hot` presente | Borrar `public/hot`; no usar `VITE_DEV_SERVER_URL` con Apache |
+| `.card` sin estilo DaisyUI | `<style>` manual en layout pisaba componentes | Eliminar bloque `<style>` del layout |
+| Error JSON recursion al editar | `request('idea')` tomaba el modelo de la ruta `{idea}` | Usar `request('description')` en el PATCH (corregido en Ep. 9–10) |
 
 ### Comentarios personales
 
-*[Pendiente]*
+Vite centraliza Tailwind y DaisyUI en un solo pipeline. Con **Apache en Vagrant** no hace falta `npm run dev`: `npm run watch` recompila y el refresh en el navegador es suficiente. Los temas DaisyUI se configuran en CSS (`@plugin "daisyui/theme"`), lo que facilita personalizar colores sin tocar cada vista Blade.
 
 ### Commit Git
 

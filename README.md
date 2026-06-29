@@ -357,6 +357,12 @@ Episodios **01–16** documentados en [docs/entregable01.md](docs/entregable01.m
 
 ![create admin](docs/img/ep18-policy-create-admin.png)
 
+### Entregable 02 — Episodio 19: Frontend Asset Bundling with Vite
+
+[Ver documentación](docs/entregable02.md#episodio-19)
+
+![Vite bundling y DaisyUI en lfts.local](docs/img/ep19-vite.png)
+
 ---
 
 ## Control de versiones
