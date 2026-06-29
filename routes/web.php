@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IdeaController;
 use App\Http\Controllers\Auth\SessionsController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use Illuminate\Support\Facades\Gate;
+
 
 Route::get('/', function() {
  return 'Placeholder for home page.';
@@ -39,3 +41,8 @@ Route::middleware('guest')->group(function () {
 
 
 Route::delete('/logout', [SessionsController::class, 'destroy']);
+
+Route::get('/admin', function(){
+    Gate::authorize('view-admin');
+    return 'private admin area';
+});

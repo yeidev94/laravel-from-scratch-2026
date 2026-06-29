@@ -60,6 +60,16 @@
 | `ep15-index-filter.png` | 15 | `index()` filtrado por `user_id` |
 | `ep16-user-hasMany-tinker.png` | 16 | `User::hasMany` + `$user->ideas` en Tinker |
 | `ep16-controller-relationships.png` | 16 | `Auth::user()->ideas` y `ideas()->create()` |
+
+## Entregable 02 — episodios 17+
+
+| Archivo | Episodio | Descripción |
+|---------|----------|-------------|
+| `ep17-gate-define-nav.png` | 17 | `Gate::define('view-admin')` y `@can` en nav |
+| `ep17-route-can.png` | 17 | Ruta `/admin` con `->can('view-admin')` |
+| `ep17-gate-authorize-route.png` | 17 | `Gate::authorize()` en closure |
+| `ep17-403-unauthorized.png` | 17 | 403 — acción no autorizada |
+| `ep17-deny-as-not-found.png` | 17 | `denyAsNotFound()` → 404 |
 | `evidencia-registro.png` | 14 | **Obligatoria** — registro funcional |
 | `evidencia-login.png` | 14 | **Obligatoria** — sesión autenticada |
 | `evidencia-logout.png` | 14 | **Obligatoria** — logout y nav guest |

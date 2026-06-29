@@ -18,22 +18,22 @@ En este entregable se documenta la autorización con Gates y Policies, el empaqu
 
 ## Índice de episodios
 
-| # | Episodio | Estado |
-|---|----------|--------|
-| 17 | Authorization Using Gates | Pendiente |
-| 18 | Authorization Using Policies | Pendiente |
-| 19 | Frontend Asset Bundling with Vite | Pendiente |
-| 20 | Notifications | Pendiente |
-| 21 | When to Queue it Up | Pendiente |
-| 22 | How to Get Started Testing Your Code | Pendiente |
-| 23 | Final Project Setup | Pendiente |
-| 24 | Design Your Model Layer | Pendiente |
-| 25 | Tailwind Theme Setup And Initial UI | Pendiente |
-| 26 | Browser Testing Registration Forms With Pest | Pendiente |
-| 27 | Flash Messaging and Interactivity with AlpineJS | Pendiente |
-| 28 | Idea Cards | Pendiente |
-| 29 | Idea Filtering | Pendiente |
-| 30 | Show A Single Idea | Pendiente |
+| # | Episodio | Estado | Enlace |
+|---|----------|--------|--------|
+| 17 | Authorization Using Gates | Completado | [Episodio 17](#episodio-17) |
+| 18 | Authorization Using Policies | Pendiente | [Episodio 18](#episodio-18) |
+| 19 | Frontend Asset Bundling with Vite | Pendiente | — |
+| 20 | Notifications | Pendiente | — |
+| 21 | When to Queue it Up | Pendiente | — |
+| 22 | How to Get Started Testing Your Code | Pendiente | — |
+| 23 | Final Project Setup | Pendiente | — |
+| 24 | Design Your Model Layer | Pendiente | — |
+| 25 | Tailwind Theme Setup And Initial UI | Pendiente | — |
+| 26 | Browser Testing Registration Forms With Pest | Pendiente | — |
+| 27 | Flash Messaging and Interactivity with AlpineJS | Pendiente | — |
+| 28 | Idea Cards | Pendiente | — |
+| 29 | Idea Filtering | Pendiente | — |
+| 30 | Show A Single Idea | Pendiente | — |
 
 ---
 
@@ -70,39 +70,112 @@ episodio-XX: descripción breve del cambio
 
 ---
 
-## Episodio 17: Authorization Using Gates
+## Episodio 17: Authorization Using Gates {#episodio-17}
 
 ### Resumen
 
-*[Pendiente]*
+Se agregó **autorización con Gates** para controlar acceso tipo rol (p. ej. área admin). Un **Gate** es una regla de autorización definida en `AppServiceProvider` y reutilizable en rutas, controladores y Blade.
 
-### Comandos utilizados
+### Definir el Gate — `AppServiceProvider`
 
-```bash
-# N/A
+```php
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Auth\Access\Response;
+use App\Models\User;
+
+public function boot(): void
+{
+    Gate::define('view-admin', function (User $user) {
+        if ($user->id == 1) {
+            return Response::allow();
+        }
+
+        return Response::denyAsNotFound();
+    });
+}
 ```
 
-### Archivos modificados o creados
+La lógica puede ser cualquier condición sobre `$user` (id, email, rol en BD, etc.).
 
-- `app/Providers/AppServiceProvider.php`
-- `resources/views/**/*.blade.php`
+### Usar el Gate en la UI — `@can`
+
+**`nav.blade.php`**
+
+```blade
+@can('view-admin')
+    <li><a href="/admin">Admin</a></li>
+@endcan
+```
+
+Solo usuarios autorizados ven el enlace Admin.
+
+### Proteger la ruta — tres formas
+
+**1. Método `->can()` en la ruta**
+
+```php
+Route::get('/admin', function () {
+    return 'private admin area';
+})->can('view-admin');
+```
+
+**2. `Gate::authorize()` dentro del closure**
+
+```php
+use Illuminate\Support\Facades\Gate;
+
+Route::get('/admin', function () {
+    Gate::authorize('view-admin');
+    return 'private admin area';
+});
+```
+
+Si el usuario no pasa el gate → **403 Forbidden** (*This action is unauthorized*).
+
+**3. Enmascarar 403 como 404**
+
+En la definición del Gate, en lugar de denegar con 403:
+
+```php
+return Response::denyAsNotFound();
+```
+
+El usuario no autorizado ve **404 Not Found** en `/admin` — no revela que la ruta existe.
+
+| Respuesta | Cuándo usarla |
+|-----------|----------------|
+| `Response::allow()` | Usuario autorizado |
+| Denegación normal | 403 explícito |
+| `Response::denyAsNotFound()` | Ocultar recurso (admin, APIs internas) |
+
+### Archivos tocados
+
+`AppServiceProvider.php`, `routes/web.php`, `nav.blade.php`
 
 ### Evidencia
 
-![Episodio 17](./img/ep17-gates.png)
+![Gate::define y @can en nav](./img/ep17-gate-define-nav.png)
+
+![Ruta protegida con ->can()](./img/ep17-route-can.png)
+
+![Ruta con Gate::authorize()](./img/ep17-gate-authorize-route.png)
+
+![403 — usuario no autorizado](./img/ep17-403-unauthorized.png)
+
+![404 con denyAsNotFound()](./img/ep17-deny-as-not-found.png)
 
 ### Problemas y soluciones
 
-*[Pendiente]*
+Sin errores de implementación. Se probó acceso a `/admin` con usuario sin permiso: primero 403, luego 404 al usar `denyAsNotFound()`.
 
 ### Comentarios personales
 
-*[Pendiente]*
+Gates sirven para reglas globales simples; en el Ep. 18 se pasará a **Policies** para autorización por modelo (`Idea`).
 
 ### Commit Git
 
 ```
-episodio-17: autorización con Gates
+episodio-17: autorización con Gates y view-admin
 ```
 
 ---

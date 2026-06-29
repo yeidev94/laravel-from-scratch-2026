@@ -6,8 +6,8 @@
 | **Curso** | ISW811 — Aplicaciones Web con Software Libre |
 | **Docente** | Misael Matamoros Soto |
 | **Curso Laracasts** | [Laravel From Scratch (2026 Edition)](https://laracasts.com/series/laravel-from-scratch-2026) |
-| **Entregable actual** | 01 — Episodios 1 al 16 ✅ completado |
-| **Próximo entregable** | [02 — Episodios 17+](docs/entregable02.md) |
+| **Entregable actual** | [02 — Episodios 17+](docs/entregable02.md) |
+| **Entregable 01** | Episodios 1–16 ✅ [documentación](docs/entregable01.md) |
 | **Fecha límite Entregable 01** | 22 de junio de 2026, 23:59 |
 
 ---
@@ -334,6 +334,18 @@ FK `user_id`, middleware `auth`/`guest`, `Auth::id()` en store e index filtrado 
 
 Episodios **01–16** documentados en [docs/entregable01.md](docs/entregable01.md).  
 **Siguiente:** [Entregable 02](docs/entregable02.md) (episodios 17+).
+
+### Entregable 02 — Episodio 17: Authorization Using Gates
+
+[Ver documentación](docs/entregable02.md#episodio-17)
+
+![Gate define](docs/img/ep17-gate-define-nav.png)
+
+![Route can](docs/img/ep17-route-can.png)
+
+![403](docs/img/ep17-403-unauthorized.png)
+
+![404 deny](docs/img/ep17-deny-as-not-found.png)
 
 ---
 
