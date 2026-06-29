@@ -30,7 +30,7 @@
 | 13 | A Brief DaisyUI Detour | Completado | [Episodio 13](#episodio-13) |
 | 14 | Authentication Explained | Completado | [Episodio 14](#episodio-14) |
 | 15 | Require Authentication With Middleware | Completado | [Episodio 15](#episodio-15) |
-| 16 | Eloquent Relationships | Pendiente | [Episodio 16](#episodio-16) |
+| 16 | Eloquent Relationships | Completado | [Episodio 16](#episodio-16) |
 
 ---
 
@@ -1624,31 +1624,79 @@ episodio-15: middleware auth/guest y user_id en ideas
 
 ### Resumen
 
-*[Pendiente: belongsTo/hasMany, auth()->user()->ideas()->create().]*
+Se definieron relaciones Eloquent entre **`User`** e **`Idea`**: `hasMany` / `belongsTo`. En el controlador se reemplazaron queries manuales del Ep. 15 por **`Auth::user()->ideas`** (index) y **`Auth::user()->ideas()->create()`** (store). En Tinker, `$user->ideas` devuelve una **Collection** de ideas del usuario.
 
-### Comandos utilizados
+### Modelos
 
-```bash
-# N/A
+**`User.php` — hasMany**
+
+```php
+public function ideas(): HasMany
+{
+    return $this->hasMany(Idea::class);
+}
 ```
 
-### Archivos modificados o creados
+**`Idea.php` — belongsTo**
 
-- `app/Models/Idea.php`
-- `app/Models/User.php`
-- `app/Http/Controllers/IdeaController.php`
+```php
+public function user(): BelongsTo
+{
+    return $this->belongsTo(User::class);
+}
+```
+
+| Relación | Significado |
+|----------|-------------|
+| `User` → `hasMany(Idea::class)` | Un usuario tiene muchas ideas |
+| `Idea` → `belongsTo(User::class)` | Cada idea pertenece a un usuario |
+
+### Controlador — sin queries manuales
+
+**Index** — filtrar por usuario autenticado:
+
+```php
+$ideas = Auth::user()->ideas;
+```
+
+**Store** — crear idea ligada al usuario:
+
+```php
+Auth::user()->ideas()->create([
+    'description' => $request->description,
+    'state' => 'pending',
+]);
+```
+
+Laravel asigna `user_id` automáticamente al usar la relación; no hace falta `Idea::where('user_id', ...)` ni pasar `user_id` a mano en el create.
+
+### Probar con Tinker
+
+```bash
+php artisan tinker
+>>> $user = User::first();
+>>> $user->ideas;
+```
+
+Retorna `Illuminate\Database\Eloquent\Collection` con las ideas de ese usuario (p. ej. *"john doe idea"*, *"second idea :D"*).
+
+### Archivos tocados
+
+`User.php`, `Idea.php`, `IdeaController.php` (`index`, `store`)
 
 ### Evidencia
 
-![Episodio 16 — relaciones Eloquent](./img/ep16-relationships.png)
+![User hasMany e $user->ideas en Tinker](./img/ep16-user-hasMany-tinker.png)
+
+![Controller con Auth::user()->ideas y create](./img/ep16-controller-relationships.png)
 
 ### Problemas y soluciones
 
-*[Pendiente]*
+No se reportaron errores. El listado en `/ideas` muestra solo ideas del usuario logeado; Tinker confirma la relación en BD.
 
 ### Comentarios personales
 
-*[Pendiente]*
+Cierra el **Entregable 01** (episodios 01–16). Los siguientes capítulos del curso (17+) se documentan en **`docs/entregable02.md`**.
 
 ### Commit Git
 
@@ -1658,15 +1706,23 @@ episodio-16: relaciones User-Idea con Eloquent
 
 ---
 
+## Cierre — Entregable 01 completado
+
+Los episodios **01 al 16** del curso *Laravel From Scratch 2026* quedan documentados en este archivo. El proyecto cubre: Laravel funcional, routing, Blade, formularios, migraciones, Eloquent, CRUD REST, validación, Form Requests, DaisyUI, autenticación, middleware y relaciones User–Idea.
+
+**Siguiente hito:** [Entregable 02](entregable02.md) — episodios 17 en adelante (Gates, Policies, Vite, colas, tests, proyecto final).
+
+---
+
 ## Checklist de cierre — Entregable 01
 
-- [ ] Episodios 01–16 completados y documentados
-- [ ] Mínimo 16 commits (uno por episodio) en el historial Git
-- [ ] Las 12 capturas obligatorias guardadas en `docs/img/`
-- [ ] CRUD completo de ideas funcionando en navegador
-- [ ] Auth (registro, login, logout) funcionando
-- [ ] Relación User–Idea verificada
-- [ ] Proyecto ejecutable tras `composer install`, `npm install`, `php artisan migrate`
-- [ ] `README.md` con instrucciones de instalación
+- [x] Episodios 01–16 completados y documentados
+- [ ] Mínimo 16 commits (uno por episodio) en el historial Git — *verificar con `git log`*
+- [x] Las 12 capturas obligatorias guardadas en `docs/img/`
+- [x] CRUD completo de ideas funcionando en navegador
+- [x] Auth (registro, login, logout) funcionando
+- [x] Relación User–Idea verificada (Tinker + `/ideas`)
+- [x] Proyecto ejecutable tras `composer install`, `npm install`, `php artisan migrate`
+- [x] `README.md` con instrucciones de instalación
 - [ ] Archivo `ISW811_Proyecto1_Entregable01_HernandezGaritaYeison.tar.gz` generado sin `vendor/` ni `node_modules/`
 - [ ] Subido al Campus Virtual UTN antes del **22/06/2026 23:59**

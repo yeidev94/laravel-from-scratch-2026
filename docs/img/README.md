@@ -58,6 +58,8 @@
 | `ep15-store-user-id.png` | 15 | `store()` con `Auth::id()` |
 | `ep15-tinker-factory.png` | 15 | `User::factory()->create()` en Tinker |
 | `ep15-index-filter.png` | 15 | `index()` filtrado por `user_id` |
+| `ep16-user-hasMany-tinker.png` | 16 | `User::hasMany` + `$user->ideas` en Tinker |
+| `ep16-controller-relationships.png` | 16 | `Auth::user()->ideas` y `ideas()->create()` |
 | `evidencia-registro.png` | 14 | **Obligatoria** — registro funcional |
 | `evidencia-login.png` | 14 | **Obligatoria** — sesión autenticada |
 | `evidencia-logout.png` | 14 | **Obligatoria** — logout y nav guest |

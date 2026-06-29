@@ -6,7 +6,8 @@
 | **Curso** | ISW811 — Aplicaciones Web con Software Libre |
 | **Docente** | Misael Matamoros Soto |
 | **Curso Laracasts** | [Laravel From Scratch (2026 Edition)](https://laracasts.com/series/laravel-from-scratch-2026) |
-| **Entregable actual** | 01 — Episodios 1 al 16 |
+| **Entregable actual** | 01 — Episodios 1 al 16 ✅ completado |
+| **Próximo entregable** | [02 — Episodios 17+](docs/entregable02.md) |
 | **Fecha límite Entregable 01** | 22 de junio de 2026, 23:59 |
 
 ---
@@ -148,7 +149,9 @@ sudo chmod -R 775 storage bootstrap/cache
 | 13 | A Brief DaisyUI Detour | Completado |
 | 14 | Authentication Explained | Completado |
 | 15 | Require Authentication With Middleware | Completado |
-| 16 | Pendiente | — |
+| 16 | Eloquent Relationships | Completado |
+
+> **Entregable 01 cerrado.** Continuación en [docs/entregable02.md](docs/entregable02.md) (episodios 17+).
 
 ### Episodio 01 — Proyecto Laravel funcional
 
@@ -314,6 +317,23 @@ FK `user_id`, middleware `auth`/`guest`, `Auth::id()` en store e index filtrado 
 ![Tinker factory](docs/img/ep15-tinker-factory.png)
 
 ![Index filter](docs/img/ep15-index-filter.png)
+
+### Episodio 16 — Eloquent Relationships
+
+[Ver documentación completa](docs/entregable01.md#episodio-16)
+
+`hasMany` / `belongsTo`, `Auth::user()->ideas`, `ideas()->create()`, Tinker `$user->ideas`.
+
+![User hasMany Tinker](docs/img/ep16-user-hasMany-tinker.png)
+
+![Controller relaciones](docs/img/ep16-controller-relationships.png)
+
+---
+
+## Entregable 01 — cerrado
+
+Episodios **01–16** documentados en [docs/entregable01.md](docs/entregable01.md).  
+**Siguiente:** [Entregable 02](docs/entregable02.md) (episodios 17+).
 
 ---
 
