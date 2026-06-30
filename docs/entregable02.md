@@ -12,8 +12,6 @@
 
 ## Resumen del entregable
 
-En este entregable se documenta la autorización con Gates y Policies, el empaquetado de assets con Vite, notificaciones por correo, trabajos en cola, pruebas automatizadas con Pest y el inicio del proyecto final “Idea”.
-
 ### Dos carpetas, una documentación
 
 | Desde Ep. | Código Laravel | Documentación + capturas |
@@ -36,8 +34,8 @@ Ver [estructura-proyectos.md](./estructura-proyectos.md) para rutas, Apache, Git
 | 21 | When to Queue it Up | Completado | [Episodio 21](#episodio-21) |
 | 22 | How to Get Started Testing Your Code | Inconcluso | [Episodio 22](#episodio-22) |
 | 23 | Final Project Setup | Completado | [Episodio 23](#episodio-23) |
-| 24 | Design Your Model Layer | Pendiente | — |
-| 25 | Tailwind Theme Setup And Initial UI | Pendiente | — |
+| 24 | Design Your Model Layer | Completado | [Episodio 24](#episodio-24) |
+| 25 | Tailwind Theme Setup And Initial UI | En progreso | — |
 | 26 | Browser Testing Registration Forms With Pest | Pendiente | — |
 | 27 | Flash Messaging and Interactivity with AlpineJS | Pendiente | — |
 | 28 | Idea Cards | Pendiente | — |
@@ -1050,9 +1048,26 @@ Se conservó el trabajo de 22 episodios en `-old` sin mezclarlo con el Laravel f
 
 ### Commit Git
 
+Desde la VM, en el repo activo (`laravel-from-scratch-2026`):
+
+```bash
+cd ~/sites/laravel-from-scratch-2026
+
+git status
+git add .
+git commit -m "episodio-23: setup proyecto Idea, Rector y composer run format"
+git push
 ```
-episodio-23: proyecto Idea, Rector/rector-laravel y composer run format
+
+Mensaje (misma convención que eps. 17–21):
+
 ```
+episodio-23: setup proyecto Idea, Rector y composer run format
+```
+
+**Qué incluye este commit:** Laravel nuevo (proyecto Idea), `rector.php`, deps `rector` / `rector-laravel`, script `format` en `composer.json`, cambios de Rector en ~19 archivos, documentación Ep. 23 en `docs/` y `docs/img/ep23-rector.png`.
+
+**Nota:** `laravel-from-scratch-2026-old` vive como carpeta hermana en `~/sites/` (archivo Ep. 1–22). No va dentro del repo del proyecto nuevo salvo que decidas versionarlo aparte o incluirlo solo en el `.tar.gz` del entregable.
 
 ### Checklist — Ep. 23
 
@@ -1065,12 +1080,202 @@ episodio-23: proyecto Idea, Rector/rector-laravel y composer run format
 
 ---
 
-## Episodios 24–30: Proyecto final (primera parte)
+## Episodio 24: Design Your Model Layer {#episodio-24}
+
+### Resumen
+
+Se definió la **capa de modelos** del proyecto Idea antes de la UI: **`Idea`**, **`Step`**, enum **`IdeaStatus`**, migraciones, factories, configuración Eloquent estricta y **tests Pest** que comprueban relaciones `User` ↔ `Idea` ↔ `Step`.
+
+### Relaciones Eloquent
+
+```
+User 1 ──hasMany──> Idea *
+Idea   ──belongsTo──> User
+Idea 1 ──hasMany──> Step *
+Step   ──belongsTo──> Idea
+```
+
+| Modelo | Método | Tipo |
+|--------|--------|------|
+| `User` | `ideas()` | `hasMany(Idea::class)` |
+| `Idea` | `user()` | `belongsTo(User::class)` |
+| `Idea` | `steps()` | `hasMany(Step::class)` |
+| `Step` | `idea()` | `belongsTo(Idea::class)` |
+
+### Migración `ideas`
+
+Archivo: `database/migrations/2026_06_30_043337_create_ideas_table.php`
+
+| Columna | Tipo |
+|---------|------|
+| `title` | string |
+| `description` | text, nullable |
+| `user_id` | FK → `users`, cascade on delete |
+| `links` | json, default `[]` |
+| `status` | string, default `pending` |
+| `image_path` | string, nullable |
+
+### Migración `steps`
+
+Archivo: `database/migrations/2026_06_30_044745_create_steps_table.php`
+
+| Columna | Tipo |
+|---------|------|
+| `description` | text |
+| `completed` | boolean, default `false` |
+| `idea_id` | FK → `ideas`, cascade on delete |
+
+### Enum `IdeaStatus` — `app/IdeaStatus.php`
+
+```php
+enum IdeaStatus: string
+{
+    case Pending = 'pending';
+    case InProgress = 'in-progress';
+    case Completed = 'completed';
+
+    public function label(): string { /* match → Pending, In Progress, Completed */ }
+}
+```
+
+### Modelo `Idea` — casts y defaults
+
+```php
+protected $casts = [
+    'links' => AsArrayObject::class,
+    'status' => IdeaStatus::class,
+];
+
+protected $attributes = [
+    'status' => IdeaStatus::Pending,
+];
+```
+
+En **Tinker**, `Idea::factory()->make()->status` devuelve el enum `Pending` aunque la factory no lo setee explícitamente — gracias a `$attributes`.
+
+### Modelo `Step` — default `completed`
+
+```php
+protected $attributes = [
+    'completed' => false,
+];
+```
+
+### Config Eloquent — `AppServiceProvider`
+
+```php
+Model::unguard();
+Model::shouldBeStrict();
+Model::automaticallyEagerLoadRelationships();
+```
+
+### Factories
+
+- **`IdeaFactory`:** `title`, `description`, `links`, `image_path`, `user_id` → `User::factory()`
+- **`StepFactory`:** `description`, `completed` → false, `idea_id` → `Idea::factory()`
+
+### Tests — `tests/Feature/IdeaTest.php`
+
+```php
+test('it belongs to a user', function () {
+    $idea = Idea::factory()->create();
+    expect($idea->user)->toBeInstanceOf(User::class);
+});
+
+test('it can have steps', function () {
+    $idea = Idea::factory()->create();
+    expect($idea->steps)->toBeInstanceOf(Collection::class);
+
+    $idea->steps()->create(['description' => 'Do the thing']);
+
+    expect($idea->fresh()->steps)->toHaveCount(1);
+});
+```
+
+Ejecución:
+
+```bash
+vendor/bin/pest tests/Feature/IdeaTest.php
+# Tests: 2 passed — ~11.54 s (primer test documentado en evidencia)
+```
+
+También se generaron con `make:model Idea -mfppc`: `IdeaPolicy`, `IdeaController` *(para episodios posteriores)*.
+
+### Comandos utilizados
+
+```bash
+cd ~/sites/laravel-from-scratch-2026
+php artisan make:model Idea -mfppc
+php artisan make:enum IdeaStatus
+php artisan make:model Step -mf
+php artisan migrate
+php artisan make:test IdeaTest
+vendor/bin/pest tests/Feature/IdeaTest.php
+php artisan tinker    # Idea::factory()->make()->status
+```
+
+### Archivos tocados
+
+| Archivo | Rol |
+|---------|-----|
+| `app/Models/Idea.php` | Casts, relaciones, default status |
+| `app/Models/Step.php` | `idea()`, default completed |
+| `app/Models/User.php` | `ideas()` |
+| `app/IdeaStatus.php` | Enum backed + `label()` |
+| `database/migrations/*_create_ideas_table.php` | Tabla ideas |
+| `database/migrations/*_create_steps_table.php` | Tabla steps |
+| `database/factories/IdeaFactory.php` | Dummy ideas |
+| `database/factories/StepFactory.php` | Dummy steps |
+| `app/Providers/AppServiceProvider.php` | unguard, strict, eager load |
+| `tests/Feature/IdeaTest.php` | 2 tests de relaciones |
+| `app/Policies/IdeaPolicy.php` | Generado (Ep. futuro) |
+| `app/Http/Controllers/IdeaController.php` | Generado (Ep. futuro) |
+
+### Evidencia
+
+![Idea model, casts y Tinker — status IdeaStatus::Pending](./img/ep24-enum-tinker.png)
+
+![IdeaTest PASS — it belongs to a user](./img/ep24-idea-test-pass.png)
+
+### Problemas y soluciones
+
+Primer intento del test falló por error de BD al preparar el statement (stack trace en `vendor/`); tras migraciones y factories correctas, **`vendor/bin/pest tests/Feature/IdeaTest.php`** pasó en verde.
+
+### Comentarios personales
+
+Capa de dominio lista sin tocar UI. El enum + `$attributes` evitan strings mágicos para `status`. Ep. 25 entra en Tailwind, layout y registro/login.
+
+### Commit Git
+
+```bash
+cd ~/sites/laravel-from-scratch-2026
+git add .
+git commit -m "episodio-24: modelos Idea y Step, IdeaStatus y tests"
+git push
+```
+
+```
+episodio-24: modelos Idea y Step, IdeaStatus y tests
+```
+
+### Checklist — Ep. 24
+
+- [x] Modelos `Idea`, `Step`, `User`
+- [x] Enum `IdeaStatus` + cast + Tinker
+- [x] Migraciones `ideas` y `steps`
+- [x] Relaciones hasMany / belongsTo
+- [x] Factories + config Eloquent en `AppServiceProvider`
+- [x] `IdeaTest` (2 tests) PASS
+- [x] Evidencias `ep24-enum-tinker.png`, `ep24-idea-test-pass.png`
+
+---
+
+## Episodios 25–30: Proyecto final (continuación)
 
 Documentar cada episodio del 23 al 30 siguiendo la plantilla de arriba. Temas principales:
 
 - **23:** Setup del repo, GitHub, herramientas (Pint, Rector, Boost) — [ver Ep. 23](#episodio-23)
-- **24:** Modelos Idea, Step, IdeaStatus, factories y tests
+- **24:** Modelos Idea, Step, IdeaStatus, factories y tests — [ver Ep. 24](#episodio-24)
 - **25:** Tema Tailwind, componentes UI, registro/login
 - **26:** Browser tests de registro
 - **27:** Flash messages con Alpine.js

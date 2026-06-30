@@ -89,15 +89,17 @@ Ver [estructura-proyectos.md](../estructura-proyectos.md).
 | `ep22-example-test-pass.png` | 22 | `ExampleTest` PASS — `visit('/')` + `assertSee('Welcome')` (~16.66 s) |
 | `ep22-auth-test-timeout.png` | 22 | `AuthTest` FAIL — timeout 120 s, duración ~252 s (episodio inconcluso) |
 
-## Entregable 02 — episodios 23+ (código en `~/sites/idea`; capturas **aquí**)
+## Entregable 02 — episodios 23+ (proyecto Idea en `laravel-from-scratch-2026`)
 
 | Archivo | Episodio | Descripción |
 |---------|----------|-------------|
-| `ep23-proyecto-nuevo.png` | 23 | `laravel new idea` + landing en `idea.local` *(pendiente)* |
-| `ep23-github-repo.png` | 23 | Repo GitHub con commits iniciales *(pendiente)* |
-| `ep23-pint-format.png` | 23 | `composer run format` (Rector + Pint) *(pendiente)* |
-| `ep23-rector.png` | 23 | `rector.php` + `[OK] 19 files have been changed by Rector` |
-| `ep23-boost.png` | 23 | `boost:install` / MCP Cursor *(pendiente)* |
+| `ep23-proyecto-nuevo.png` | 23 | Proyecto nuevo + landing *(pendiente)* |
+| `ep23-github-repo.png` | 23 | Repo GitHub *(pendiente)* |
+| `ep23-pint-format.png` | 23 | `composer run format` *(pendiente)* |
+| `ep23-rector.png` | 23 | `rector.php` + 19 archivos modificados |
+| `ep23-boost.png` | 23 | Laravel Boost *(opcional)* |
+| `ep24-enum-tinker.png` | 24 | `Idea` casts + Tinker `IdeaStatus::Pending` |
+| `ep24-idea-test-pass.png` | 24 | `IdeaTest` PASS — `it belongs to a user` |
 
 ## Evidencias obligatorias — Entregable 01
 
