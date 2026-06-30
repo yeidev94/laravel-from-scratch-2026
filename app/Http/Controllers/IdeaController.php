@@ -7,6 +7,7 @@ use App\Http\Requests\IdeaRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate; 
 use App\Notifications\IdeaPublished;
+use App\Jobs\UpdateIdeaStatistics;
 
 class IdeaController extends Controller
 {

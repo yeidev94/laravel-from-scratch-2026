@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Gate;
 
 
 Route::get('/', function() {
- return 'Placeholder for home page.';
+    return 'Welcome Placeholder for home page.';
 });
 
 Route::middleware('auth')->group(function(){

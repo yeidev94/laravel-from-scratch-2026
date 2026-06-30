@@ -78,6 +78,12 @@
 | `ep20-tinker-notifications.png` | 20 | `User::first()->notifications` en Tinker |
 | `ep20-mailpit-ideapublished.png` | 20 | `.env` mail + `notify()` + Mailpit |
 | `ep20-controller-notify.png` | 20 | `store()` + `Auth::user()->notify(IdeaPublished)` |
+| `ep21-make-job.png` | 21 | `php artisan make:job` → `UpdateIdeaStatistics` |
+| `ep21-dispatch-job.png` | 21 | `dispatch()` en Tinker + `handle()` |
+| `ep21-queue-work.png` | 21 | `queue:work` RUNNING/DONE + `laravel.log` |
+| `ep21-jobs-table.png` | 21 | Tabla `jobs` en DBeaver |
+| `ep22-example-test-pass.png` | 22 | `ExampleTest` PASS — `visit('/')` + `assertSee('Welcome')` (~16.66 s) |
+| `ep22-auth-test-timeout.png` | 22 | `AuthTest` FAIL — timeout 120 s, duración ~252 s (episodio inconcluso) |
 | `evidencia-registro.png` | 14 | **Obligatoria** — registro funcional |
 | `evidencia-login.png` | 14 | **Obligatoria** — sesión autenticada |
 | `evidencia-logout.png` | 14 | **Obligatoria** — logout y nav guest |

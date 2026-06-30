@@ -24,9 +24,9 @@ En este entregable se documenta la autorización con Gates y Policies, el empaqu
 | 18 | Authorization Using Policies | Completado | [Episodio 18](#episodio-18) |
 | 19 | Frontend Asset Bundling with Vite | Completado | [Episodio 19](#episodio-19) |
 | 20 | Notifications | Completado | [Episodio 20](#episodio-20) |
-| 21 | When to Queue it Up | Pendiente | — |
-| 22 | How to Get Started Testing Your Code | Pendiente | — |
-| 23 | Final Project Setup | Pendiente | — |
+| 21 | When to Queue it Up | Completado | [Episodio 21](#episodio-21) |
+| 22 | How to Get Started Testing Your Code | Inconcluso | [Episodio 22](#episodio-22) |
+| 23 | Final Project Setup | En progreso | [Episodio 23](#episodio-23) |
 | 24 | Design Your Model Layer | Pendiente | — |
 | 25 | Tailwind Theme Setup And Initial UI | Pendiente | — |
 | 26 | Browser Testing Registration Forms With Pest | Pendiente | — |
@@ -585,88 +585,457 @@ episodio-20: notificaciones IdeaPublished y Mailpit
 
 ---
 
-## Episodio 21: When to Queue it Up
+## Episodio 21: When to Queue it Up {#episodio-21}
 
 ### Resumen
 
-*[Pendiente: ShouldQueue, php artisan queue:work, tabla jobs.]*
+Se introdujeron **colas (queues)** en Laravel: procesos que corren **fuera del request** del usuario. Se creó el job **`UpdateIdeaStatistics`**, se despachó con Tinker, se procesó con **`queue:work`** y se verificó en la tabla **`jobs`** de BD y en `storage/logs/laravel.log`.
+
+### Conceptos — queue, job, worker
+
+| Término | Qué es |
+|---------|--------|
+| **Queue** | Pila de trabajo — lista de tareas pendientes (en BD, Redis, etc.) |
+| **Job** | La tarea concreta — clase con lógica en `handle()` |
+| **Worker** | Proceso que saca jobs de la cola y los ejecuta (`php artisan queue:work`) |
+
+**Cuándo usar colas:** envío de correos, estadísticas, reportes, APIs lentas — cualquier cosa que no deba bloquear la respuesta al usuario.
+
+### Configuración
+
+```env
+QUEUE_CONNECTION=database
+```
+
+Tabla `jobs` (migración Laravel por defecto o `php artisan queue:table` + `migrate`).
+
+### Crear un Job
+
+```bash
+php artisan make:job
+# Name: UpdateIdeaStatistics
+```
+
+Genera `app/Jobs/UpdateIdeaStatistics.php`:
+
+```php
+class UpdateIdeaStatistics implements ShouldQueue
+{
+    use Queueable;
+
+    public function handle(): void
+    {
+        logger('The job UpdateIdeaStatistics is being processed');
+    }
+}
+```
+
+`implements ShouldQueue` → el job va a la cola, no corre inline.
+
+### Despachar un Job
+
+**Tinker:**
+
+```php
+App\Jobs\UpdateIdeaStatistics::dispatch();
+// => Illuminate\Foundation\Bus\PendingDispatch
+```
+
+También desde controladores: `UpdateIdeaStatistics::dispatch()` o `dispatch(new UpdateIdeaStatistics())`.
+
+### Procesar la cola — worker
+
+Terminal aparte (debe estar corriendo):
+
+```bash
+php artisan queue:work
+```
+
+Salida:
+
+```text
+INFO  Processing jobs from the [default] queue.
+App\Jobs\UpdateIdeaStatistics ........ RUNNING
+App\Jobs\UpdateIdeaStatistics ........ DONE
+```
+
+Log en `storage/logs/laravel.log`:
+
+```text
+local.DEBUG: The job UpdateIdeaStatistics is being processed
+```
+
+### Jobs en la base de datos
+
+Tabla **`jobs`** en DBeaver (`larabase`): filas con `queue` = `default`, `payload` (JSON serializado), `attempts` = 0 hasta que el worker las procesa.
+
+Sin `queue:work` activo, los jobs **se acumulan** en `jobs` y no se ejecutan.
+
+### Relación con Ep. 20
+
+`IdeaPublished` puede implementar `ShouldQueue` para encolar el correo en lugar de enviarlo en el mismo request — mismo patrón que `UpdateIdeaStatistics`.
 
 ### Comandos utilizados
 
 ```bash
-php artisan queue:table
-php artisan migrate
+php artisan make:job          # UpdateIdeaStatistics
 php artisan queue:work
+php artisan tinker            # dispatch()
 ```
 
-### Archivos modificados o creados
+### Archivos tocados
 
-- `app/Notifications/IdeaPublished.php`
-- `.env` *(QUEUE_CONNECTION)*
+`app/Jobs/UpdateIdeaStatistics.php`, `.env` (`QUEUE_CONNECTION=database`), tabla `jobs`
 
 ### Evidencia
 
-![Episodio 21](./img/ep21-queues.png)
+![make:job UpdateIdeaStatistics](./img/ep21-make-job.png)
+
+![dispatch() y handle() con logger](./img/ep21-dispatch-job.png)
+
+![queue:work RUNNING/DONE y laravel.log](./img/ep21-queue-work.png)
+
+![Tabla jobs en BD + dispatch + queue:work](./img/ep21-jobs-table.png)
 
 ### Problemas y soluciones
 
-*[Pendiente]*
+Si el job no corre: verificar que `queue:work` esté activo y `QUEUE_CONNECTION=database`. Jobs pendientes visibles en tabla `jobs`.
 
 ### Comentarios personales
 
-*[Pendiente]*
+El worker es un proceso de larga duración — en producción se usa Supervisor o similar. Ep. 22 entra en testing con Pest.
 
 ### Commit Git
 
 ```
-episodio-21: notificaciones en cola con queue worker
+episodio-21: job UpdateIdeaStatistics y queue:work
 ```
 
 ---
 
-## Episodio 22: How to Get Started Testing Your Code
+## Episodio 22: How to Get Started Testing Your Code {#episodio-22}
 
 ### Resumen
 
-*[Pendiente: Pest, Playwright, php artisan test, browser tests.]*
+Se introducen **pruebas automatizadas con Pest** en Laravel. Pest permite escribir tests legibles con sintaxis `it()` / `expect()` y cubre:
+
+| Tipo | Carpeta típica | Qué prueba |
+|------|----------------|------------|
+| **Unit** | `tests/Unit/` | Una clase o función aislada |
+| **Feature** | `tests/Feature/` | HTTP, rutas, controladores, integración |
+| **Browser** | `tests/Feature/` *(con plugin)* | UI real con **Playwright** — navegador headless |
+
+En este episodio se usa el plugin **`pest-plugin-browser`**: `visit()` abre una URL, `assertSee()` comprueba texto en pantalla, `fill()` / `press()` simulan formularios. Los browser tests viven en `tests/Feature/` pero ejecutan un navegador real (Chrome por defecto).
+
+### Primer browser test — `ExampleTest.php`
+
+```php
+<?php
+
+it('the application returns a successful response', function () {
+    visit('/')->assertSee('Welcome');
+});
+```
+
+Ejecutar:
+
+```bash
+php artisan test
+# o
+./vendor/bin/pest
+```
+
+En la VM el test pasó pero tardó **~16.66 s** para una sola aserción — el entorno Vagrant + Playwright es lento comparado con tests PHP puros.
+
+### Depuración con `->debug()`
+
+En cualquier punto de la cadena del browser test se puede llamar `->debug()`:
+
+```php
+visit('/register')
+    ->fill('email', 'test@mail.com')
+    ->debug()   // pausa, abre navegador en modo headed y muestra la página
+    ->press('@register-button');
+```
+
+También existe configuración global `pest()->browser()->debug()` en `tests/Pest.php` para depurar aserciones.
+
+### Test de registro — `AuthTest.php`
+
+```php
+<?php
+
+use App\Models\User;
+
+it('register a user', function () {
+    visit('/register')
+        ->fill('name', 'Jane Doe')
+        ->fill('email', 'janedoe@mail.com')
+        ->fill('password', 'secret1234')
+        ->press('@register-button')
+        ->assertPathIs('/ideas');
+});
+```
+
+El botón usa `data-test="register-button"` → selector `@register-button` en Pest.
+
+Tras el registro, `RegisteredUserController::store()` hace `Auth::login()` y `redirect('/ideas')`.
+
+### Timeout del navegador (problema principal)
+
+**Error observado:**
+
+```text
+Timeout 5000ms exceeded.
+A screenshot of the page has been saved to [Tests/Browser/Screenshots/it_register_a_user].
+```
+
+**Diagnóstico:** el usuario **sí se crea en la BD** (`larabase.users`), así que el POST `/register` funciona. El fallo ocurre **después**, cuando Pest espera que la URL sea `/ideas` (`assertPathIs`). El timeout por defecto de Playwright es **5000 ms** — insuficiente en la VM (el `ExampleTest` simple ya tarda ~17 s).
+
+**Solución — aumentar timeout global** en `tests/Pest.php`:
+
+```php
+pest()->browser()->timeout(60_000); // 60 segundos para toda la suite browser
+```
+
+Colocar **antes** del bloque `pest()->extend(...)`.
+
+Alternativa por test (sin cambiar global):
+
+```php
+use Pest\Browser\Playwright\Playwright;
+
+Playwright::usingTimeout(60_000, function () {
+    visit('/register')
+        // ...
+        ->assertPathIs('/ideas');
+});
+```
+
+### Email duplicado en re-ejecuciones
+
+`phpunit.xml` usa la BD real `larabase` y `RefreshDatabase` está comentado en `Pest.php`. Si el test ya corrió una vez, `janedoe@mail.com` existe → validación `unique:users` falla → la página **no** redirige a `/ideas` y `assertPathIs` agota el timeout.
+
+Opciones:
+
+1. Borrar el usuario de prueba en DBeaver antes de re-correr.
+2. Email único por ejecución: `'jane' . uniqid() . '@mail.com'`.
+3. Descomentar `->use(RefreshDatabase::class)` en `Pest.php` *(migra/limpia BD en cada test — usar con cuidado en `larabase` compartida)*.
+
+### Aserciones alternativas
+
+Si el path tarda pero la página ya cargó:
+
+```php
+->assertSee('Your Ideas')   // texto del index de ideas
+// o
+->assertPathIs('/ideas')    // preferido cuando el redirect ya ocurrió
+```
+
+Revisar el screenshot en `tests/Browser/Screenshots/it_register_a_user` para ver en qué URL quedó el navegador al fallar.
 
 ### Comandos utilizados
 
 ```bash
 php artisan test
 ./vendor/bin/pest
+./vendor/bin/pest --filter="register a user"
+./vendor/bin/pest tests/Feature/AuthTest.php
 ```
 
 ### Archivos modificados o creados
 
-- `tests/Feature/*.php`
-- `tests/Browser/*.php` *(si aplica)*
+- `tests/Pest.php` — `pest()->extend(TestCase::class)`, timeout browser
+- `tests/Feature/ExampleTest.php` — `visit('/')` + `assertSee('Welcome')`
+- `tests/Feature/AuthTest.php` — registro vía browser
+- `resources/views/auth/register.blade.php` — `data-test="register-button"`
+- `tests/Browser/Screenshots/` — capturas automáticas al fallar
 
 ### Evidencia
 
-![Episodio 22](./img/ep22-testing.png)
+![ExampleTest PASS — visit / assertSee Welcome (~16.66 s)](./img/ep22-example-test-pass.png)
+
+*(Pendiente captura: AuthTest PASS — no completado por tiempos de ejecución en VM.)*
+
+![AuthTest FAIL — Timeout 120000ms, duración total ~252 s](./img/ep22-auth-test-timeout.png)
+
+### Estado del episodio: **inconcluso**
+
+Se dejó el capítulo sin cerrar por **tiempos de ejecución inaceptables** en la VM con browser tests (Playwright):
+
+| Test | Resultado | Duración |
+|------|-----------|----------|
+| `ExampleTest` — `assertSee('Welcome')` | PASS | ~16.66 s |
+| `AuthTest` — registro completo | FAIL | **~252.45 s** |
+
+Tras subir el timeout a `120_000` ms (`pest()->browser()->timeout(120_000)`), el fallo pasó a:
+
+```text
+Timeout 120000ms exceeded.
+FAIL at tests/Feature/AuthTest.php:13 → ->press('@register-button')
+```
+
+El usuario **sí se crea en BD**, pero el navegador en Vagrant no completa el flujo dentro del límite. Para el entregable se documenta lo aprendido (Pest, browser plugin, `debug()`, timeouts); los browser tests del Ep. 22 y Ep. 26 se retoman solo si el entorno mejora o se usa máquina más rápida / `sqlite :memory:`.
 
 ### Problemas y soluciones
 
-*[Pendiente]*
+| Problema | Causa | Solución |
+|----------|-------|----------|
+| `Timeout 5000ms exceeded` | VM lenta; default Playwright = 5 s | `pest()->browser()->timeout(120_000)` en `Pest.php` |
+| `Timeout 120000ms exceeded` (~252 s total) | VM + Playwright demasiado lentos para browser tests | Ep. 22 dejado inconcluso; continuar con proyecto final |
+| Usuario en BD pero test falla | Registro OK; timeout en `press` o `assertPathIs` | Revisar screenshot en `tests/Browser/Screenshots/` |
+| Falla en segunda ejecución | Email duplicado | Email único o limpiar BD |
+| No encuentra botón | Falta `data-test` | `@register-button` en el `<button>` |
 
 ### Comentarios personales
 
-*[Pendiente]*
+Los browser tests validan el flujo completo pero en Vagrant son impracticables (~252 s y aún fallan). Se prioriza avanzar al **proyecto final Idea** (Ep. 23+). Feature/unit tests PHP puros siguen siendo viables en esta VM.
 
 ### Commit Git
 
 ```
-episodio-22: pruebas automatizadas con Pest
+episodio-22: Pest browser tests (inconcluso — timeout VM)
 ```
 
 ---
 
-## Episodios 23–30: Proyecto final (primera parte)
+## Episodio 23: Final Project Setup {#episodio-23}
+
+### Resumen
+
+A partir del Ep. 23 el curso entra en el **proyecto final: Idea** — una app más completa (ideas con pasos, estados, imágenes, modales Alpine, etc.) que el CRUD de práctica de los episodios 1–22.
+
+Jeffrey Way muestra su **workflow real** de proyecto Laravel moderno:
+
+1. Crear o reinicializar el repositorio del proyecto **Idea**
+2. Subir a **GitHub** (commits por episodio)
+3. Configurar herramientas de calidad y productividad
+4. *(Opcional en el curso)* desplegar con **Laravel Forge**
+
+> **Nota ISW811:** Puedes seguir en el mismo repo `laravel-from-scratch-2026` o crear uno nuevo `idea` en `~/sites/` — lo importante es documentar cada paso y las evidencias.
+
+### Paso 1 — Nuevo proyecto Laravel (si el video lo hace desde cero)
+
+En la VM:
+
+```bash
+cd ~/sites
+laravel new idea
+# o: composer create-project laravel/laravel idea
+cd idea
+```
+
+Configurar virtual host Apache para el nuevo dominio (p. ej. `idea.local`) igual que `lfts.local`.
+
+Si Jeffrey continúa en el mismo árbol de archivos, simplemente haz `git status` y asegúrate de tener rama limpia antes del Ep. 23.
+
+### Paso 2 — Repositorio Git y GitHub
+
+```bash
+git init                    # solo si es proyecto nuevo
+git add .
+git commit -m "episodio-23: setup inicial proyecto Idea"
+git branch -M main
+git remote add origin https://github.com/TU_USUARIO/idea.git
+git push -u origin main
+```
+
+Buenas prácticas del curso: **un commit por episodio** con mensaje `episodio-XX: descripción`.
+
+### Paso 3 — Laravel Pint (formateo de código)
+
+Pint viene con Laravel. Formatea PHP según el estilo del framework:
+
+```bash
+./vendor/bin/pint
+./vendor/bin/pint --test    # solo verifica, no modifica
+```
+
+Opcional: archivo `pint.json` en la raíz para reglas personalizadas.
+
+### Paso 4 — Rector (refactors automáticos PHP)
+
+Herramienta para modernizar código PHP (upgrades de sintaxis, dead code, etc.):
+
+```bash
+composer require rector/rector --dev
+vendor/bin/rector init      # genera rector.php
+vendor/bin/rector process --dry-run
+vendor/bin/rector process
+```
+
+### Paso 5 — Code Rabbit *(opcional)*
+
+Revisor de PRs con IA — se conecta a GitHub. No es obligatorio para el curso; Jeffrey lo muestra como parte del workflow profesional. Si no tienes cuenta, documenta que lo omitiste.
+
+### Paso 6 — Laravel Boost *(opcional)*
+
+Paquete/MCP de Laracasts para asistencia AI en el proyecto Laravel. Instalación según docs del curso:
+
+```bash
+composer require laravel/boost --dev
+php artisan boost:install
+```
+
+### Paso 7 — Laravel Forge *(opcional / referencia)*
+
+Forge automatiza servidores (DigitalOcean, etc.) + deploy desde GitHub. Para ISW811 basta documentar el concepto; el despliegue real es en episodios finales (~Ep. 40).
+
+### Qué documentar como evidencia (Ep. 23)
+
+| Captura sugerida | Archivo |
+|------------------|---------|
+| `laravel new` o estructura del proyecto Idea | `ep23-proyecto-nuevo.png` |
+| Repo en GitHub con primer push | `ep23-github-repo.png` |
+| `./vendor/bin/pint` ejecutado | `ep23-pint.png` |
+| `rector` dry-run o `boost:install` *(si aplica)* | `ep23-rector-boost.png` |
+
+### Comandos utilizados
+
+```bash
+laravel new idea
+git init && git add . && git commit -m "episodio-23: setup inicial"
+git remote add origin <url>
+git push -u origin main
+./vendor/bin/pint
+composer require rector/rector --dev
+vendor/bin/rector init
+composer require laravel/boost --dev
+php artisan boost:install
+```
+
+### Archivos modificados o creados
+
+- Proyecto `idea/` *(o continuación en `laravel-from-scratch-2026`)*
+- `pint.json` *(opcional)*
+- `rector.php` *(si instalas Rector)*
+- `.github/` o integración Code Rabbit *(opcional)*
+
+### Evidencia
+
+*[Pendiente: capturas al completar el episodio en la VM.]*
+
+### Problemas y soluciones
+
+*[Completar según tu experiencia en la VM.]*
+
+### Comentarios personales
+
+Ep. 22 quedó inconcluso por browser tests lentos; el proyecto final no depende de esos tests hasta el Ep. 26. El Ep. 24 entra directo en **modelos** (`Idea`, `Step`, `IdeaStatus`).
+
+### Commit Git
+
+```
+episodio-23: setup proyecto Idea, GitHub y herramientas (Pint, Rector)
+```
+
+---
+
+## Episodios 24–30: Proyecto final (primera parte)
 
 Documentar cada episodio del 23 al 30 siguiendo la plantilla de arriba. Temas principales:
 
-- **23:** Setup del repo, GitHub, herramientas (Pint, etc.)
+- **23:** Setup del repo, GitHub, herramientas (Pint, Rector, Boost) — [ver Ep. 23](#episodio-23)
 - **24:** Modelos Idea, Step, IdeaStatus, factories y tests
 - **25:** Tema Tailwind, componentes UI, registro/login
 - **26:** Browser tests de registro

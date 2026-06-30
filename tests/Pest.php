@@ -3,6 +3,9 @@
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+pest()->browser()->timeout(120_000); // 60 segundos
+
+
 /*
 |--------------------------------------------------------------------------
 | Test Case

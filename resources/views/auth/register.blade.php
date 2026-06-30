@@ -5,7 +5,7 @@
         <form method="POST" action="/register">
             @csrf
 
-            <label class="label" for="name">Your name</label>
+            <label class="label" for="name">Name</label>
             <input
                 id="name"
                 name="name"
@@ -16,7 +16,7 @@
             />
             <x-forms.error name="name" />
 
-            <label class="label mt-2" for="email">Your email</label>
+            <label class="label mt-2" for="email">Email</label>
             <input
                 id="email"
                 name="email"
@@ -37,7 +37,7 @@
             />
             <x-forms.error name="password" />
 
-            <button type="submit" class="btn btn-primary mt-4">Register</button>
+            <button type="submit" class="btn btn-primary mt-4" data-test="register-button">Register</button>
         </form>
     </fieldset>
 </x-layout>

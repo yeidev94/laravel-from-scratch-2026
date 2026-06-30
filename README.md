@@ -375,6 +375,16 @@ Episodios **01–16** documentados en [docs/entregable01.md](docs/entregable01.m
 
 ![Notify en store](docs/img/ep20-controller-notify.png)
 
+### Entregable 02 — Episodio 21: When to Queue it Up
+
+[Ver documentación](docs/entregable02.md#episodio-21)
+
+![make job](docs/img/ep21-make-job.png)
+
+![queue work](docs/img/ep21-queue-work.png)
+
+![jobs table](docs/img/ep21-jobs-table.png)
+
 ---
 
 ## Control de versiones
