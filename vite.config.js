@@ -7,11 +7,7 @@ export default defineConfig({
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js'],
-            refresh: [
-                'resources/views/**',
-                'routes/**',
-                'app/View/Components/**',
-            ],
+            refresh: true,
             fonts: [
                 bunny('Instrument Sans', {
                     weights: [400, 500, 600],
@@ -20,4 +16,9 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    server: {
+        watch: {
+            ignored: ['**/storage/framework/views/**'],
+        },
+    },
 });
