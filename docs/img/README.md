@@ -84,6 +84,11 @@
 | `ep21-jobs-table.png` | 21 | Tabla `jobs` en DBeaver |
 | `ep22-example-test-pass.png` | 22 | `ExampleTest` PASS — `visit('/')` + `assertSee('Welcome')` (~16.66 s) |
 | `ep22-auth-test-timeout.png` | 22 | `AuthTest` FAIL — timeout 120 s, duración ~252 s (episodio inconcluso) |
+| `ep23-proyecto-nuevo.png` | 23 | `laravel new idea` + landing en `idea.local` *(pendiente)* |
+| `ep23-github-repo.png` | 23 | Repo GitHub con commits iniciales *(pendiente)* |
+| `ep23-pint-format.png` | 23 | `composer run format` (Rector + Pint) *(pendiente)* |
+| `ep23-rector.png` | 23 | `rector process` — archivos modificados *(pendiente)* |
+| `ep23-boost.png` | 23 | `boost:install` / MCP Cursor *(pendiente)* |
 | `evidencia-registro.png` | 14 | **Obligatoria** — registro funcional |
 | `evidencia-login.png` | 14 | **Obligatoria** — sesión autenticada |
 | `evidencia-logout.png` | 14 | **Obligatoria** — logout y nav guest |
