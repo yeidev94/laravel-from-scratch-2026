@@ -1,7 +1,11 @@
-# Carpeta de evidencias — Proyecto 1 ISW811
+# Carpeta de evidencias — Proyecto ISW811
 
 > **Ruta host:** `C:\Users\yeide\isw811\VMs\webserver\sites\laravel-from-scratch-2026\docs\img`  
 > **Ruta VM:** `~/sites/laravel-from-scratch-2026/docs/img`
+
+**Importante (Ep. 23+):** el código del proyecto final está en `~/sites/idea`, pero **todas las capturas** (incluidas las de `idea.local` y GitHub del repo `idea`) se guardan **en esta carpeta**, no en `idea/docs/`.
+
+Ver [estructura-proyectos.md](../estructura-proyectos.md).
 
 ## Imágenes guardadas (avance actual)
 
@@ -61,7 +65,7 @@
 | `ep16-user-hasMany-tinker.png` | 16 | `User::hasMany` + `$user->ideas` en Tinker |
 | `ep16-controller-relationships.png` | 16 | `Auth::user()->ideas` y `ideas()->create()` |
 
-## Entregable 02 — episodios 17+
+## Entregable 02 — episodios 17–22 (`laravel-from-scratch-2026` / `lfts.local`)
 
 | Archivo | Episodio | Descripción |
 |---------|----------|-------------|
@@ -84,11 +88,21 @@
 | `ep21-jobs-table.png` | 21 | Tabla `jobs` en DBeaver |
 | `ep22-example-test-pass.png` | 22 | `ExampleTest` PASS — `visit('/')` + `assertSee('Welcome')` (~16.66 s) |
 | `ep22-auth-test-timeout.png` | 22 | `AuthTest` FAIL — timeout 120 s, duración ~252 s (episodio inconcluso) |
+
+## Entregable 02 — episodios 23+ (código en `~/sites/idea`; capturas **aquí**)
+
+| Archivo | Episodio | Descripción |
+|---------|----------|-------------|
 | `ep23-proyecto-nuevo.png` | 23 | `laravel new idea` + landing en `idea.local` *(pendiente)* |
 | `ep23-github-repo.png` | 23 | Repo GitHub con commits iniciales *(pendiente)* |
 | `ep23-pint-format.png` | 23 | `composer run format` (Rector + Pint) *(pendiente)* |
-| `ep23-rector.png` | 23 | `rector process` — archivos modificados *(pendiente)* |
+| `ep23-rector.png` | 23 | `rector.php` + `[OK] 19 files have been changed by Rector` |
 | `ep23-boost.png` | 23 | `boost:install` / MCP Cursor *(pendiente)* |
+
+## Evidencias obligatorias — Entregable 01
+
+| Archivo | Episodio | Descripción |
+|---------|----------|-------------|
 | `evidencia-registro.png` | 14 | **Obligatoria** — registro funcional |
 | `evidencia-login.png` | 14 | **Obligatoria** — sesión autenticada |
 | `evidencia-logout.png` | 14 | **Obligatoria** — logout y nav guest |

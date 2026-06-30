@@ -14,6 +14,15 @@
 
 En este entregable se documenta la autorización con Gates y Policies, el empaquetado de assets con Vite, notificaciones por correo, trabajos en cola, pruebas automatizadas con Pest y el inicio del proyecto final “Idea”.
 
+### Dos carpetas, una documentación
+
+| Desde Ep. | Código Laravel | Documentación + capturas |
+|-----------|----------------|--------------------------|
+| 1–22 | `~/sites/laravel-from-scratch-2026-old` *(archivo)* | `~/sites/laravel-from-scratch-2026/docs/` |
+| 23–30 | `~/sites/laravel-from-scratch-2026` *(proyecto Idea nuevo)* | **Misma carpeta** `docs/` |
+
+Ver [estructura-proyectos.md](./estructura-proyectos.md) para rutas, Apache, Git y empaquetado del `.tar.gz`.
+
 ---
 
 ## Índice de episodios
@@ -26,7 +35,7 @@ En este entregable se documenta la autorización con Gates y Policies, el empaqu
 | 20 | Notifications | Completado | [Episodio 20](#episodio-20) |
 | 21 | When to Queue it Up | Completado | [Episodio 21](#episodio-21) |
 | 22 | How to Get Started Testing Your Code | Inconcluso | [Episodio 22](#episodio-22) |
-| 23 | Final Project Setup | En progreso | [Episodio 23](#episodio-23) |
+| 23 | Final Project Setup | Completado | [Episodio 23](#episodio-23) |
 | 24 | Design Your Model Layer | Pendiente | — |
 | 25 | Tailwind Theme Setup And Initial UI | Pendiente | — |
 | 26 | Browser Testing Registration Forms With Pest | Pendiente | — |
@@ -903,18 +912,82 @@ episodio-22: Pest browser tests (inconcluso — timeout VM)
 
 ### Resumen
 
-Inicia el **proyecto final del curso: Idea** — una app para gestionar ideas (cursos Laracasts en el video) con autenticación, estados (pending / in progress / completed), pasos (steps), enlaces, imágenes, markdown, notificaciones y perfil de usuario.
+Se inició el **proyecto final Idea** siguiendo el workflow de Jeffrey Way: Laravel nuevo, herramientas de calidad y preparación para los episodios 24–43.
 
-En este episodio **no se escribe lógica de negocio**; Jeffrey muestra su **workflow real** al arrancar un proyecto Laravel en producción:
+**Lo implementado en la VM:**
 
-1. `laravel new idea` (con **Pest**)
-2. Ver la landing en el navegador
-3. **Git** → commit inicial → **GitHub**
-4. Despliegue con **Laravel Forge** *(opcional — referencia del curso)*
-5. Herramientas: **Pint**, **Rector** + **rector-laravel**, script `composer run format`
-6. **Code Rabbit** *(opcional)* y **Laravel Boost** *(recomendado si usas IA)*
+1. Proyecto Laravel **nuevo** en `~/sites/laravel-from-scratch-2026` (Pest, sin browser plugin del curso anterior).
+2. Proyecto de práctica (eps. 1–22) **conservado** en `~/sites/laravel-from-scratch-2026-old`.
+3. **Rector** + **driftingly/rector-laravel** instalados y configurados en `rector.php`.
+4. Script **`composer run format`** (Rector → Pint).
+5. Herramientas **third-party** del episodio revisadas *(gratis vs pagas — ver tabla abajo)*.
 
-El proyecto de práctica `laravel-from-scratch-2026` (eps. 1–22) queda aparte. El final vive en un repo nuevo **`idea`**.
+En este episodio **no hay lógica de la app Idea** todavía; eso empieza en el Ep. 24.
+
+### Reorganización de carpetas (ISW811)
+
+| Carpeta | Contenido |
+|---------|-----------|
+| `laravel-from-scratch-2026` | Proyecto Idea **activo** + `docs/` + `rector.php` |
+| `laravel-from-scratch-2026-old` | CRUD, auth, gates, colas, tests browser (Ep. 1–22) |
+
+La documentación de **todos** los episodios sigue en `laravel-from-scratch-2026/docs/`.
+
+### Herramientas del episodio — gratis vs pagas
+
+| Herramienta | Tipo | Uso en Ep. 23 | Estado |
+|-------------|------|---------------|--------|
+| **Git / GitHub** | Gratis | Repo y commits por episodio | Según flujo del curso |
+| **Laravel Pint** | Gratis (incluido en Laravel) | Formateo PHP | ✅ Incluido |
+| **Rector** | Gratis | Modernizar PHP, `strict_types` | ✅ Instalado |
+| **rector-laravel** | Gratis | Reglas Laravel en Rector | ✅ Instalado |
+| **Extensión Laravel** (Cursor/VS Code) | Gratis | Blade, Artisan, rutas | Recomendada |
+| **Laravel Boost** | Gratis | MCP / contexto IA para Laravel | Opcional Ep. 23 |
+| **Code Rabbit** | Freemium / pago | Revisión de código pre-commit | Opcional |
+| **Laravel Forge** | Pago | Deploy a producción | Opcional (referencia video) |
+
+### Instalación Rector
+
+```bash
+cd ~/sites/laravel-from-scratch-2026
+composer require rector/rector --dev
+composer require driftingly/rector-laravel --dev
+vendor/bin/rector init
+```
+
+### Configuración — `rector.php`
+
+Archivo en la raíz del proyecto activo. Puntos clave:
+
+- **`withPaths`:** `app`, `bootstrap`, `config`, `public`, `resources`, `routes`, `tests`
+- **`withSkip`:** `bootstrap/cache`, `storage`, `vendor`; reglas excluidas en `resources/views`
+- **`LaravelSetProvider`** + **`withComposerBased(laravel: true)`**
+- **`withPreparedSets`:** `deadCode`, `codeQuality`, `typeDeclarations`, `privatization`, `earlyReturn`
+- **Regla explícita:** `DeclareStrictTypesRector` → añade `declare(strict_types=1);`
+
+```bash
+vendor/bin/rector process --dry-run
+vendor/bin/rector process
+```
+
+**Resultado observado:** `[OK] 19 files have been changed by Rector` — principalmente `declare(strict_types=1)` en archivos de `config/` y similares (regla `SafeDeclareStrictTypesRector`).
+
+### Script Composer `format`
+
+En `composer.json`:
+
+```json
+"format": [
+    "vendor/bin/rector",
+    "vendor/bin/pint"
+]
+```
+
+```bash
+composer run format
+```
+
+Ejecuta primero Rector (refactor) y luego Pint (estilo).
 
 ### La app Idea — qué viene después
 
@@ -926,336 +999,69 @@ El proyecto de práctica `laravel-from-scratch-2026` (eps. 1–22) queda aparte.
 | Flash messages + Alpine | 27 |
 | Tarjetas, filtros, show | 28–30 |
 
-### Adaptación al ambiente ISW811 (Vagrant)
-
-| Curso (Jeffrey) | Tu VM |
-|-----------------|-------|
-| `laravel new idea` + Pest | Igual en `~/sites/idea` |
-| Dominio `idea.test` (Herd) | Virtual host Apache **`idea.local`** |
-| Forge → producción | Opcional; documentar concepto |
-| Cursor + extensiones | Cursor/VS Code + extensión **Laravel** oficial |
-
----
-
-### Paso 1 — Crear el proyecto Laravel
-
-En la VM:
-
-```bash
-vagrant ssh
-source ~/.bashrc
-\. "$HOME/.nvm/nvm.sh"
-nvm use 24
-
-cd ~/sites
-laravel new idea
-```
-
-Durante el asistente:
-
-- **Testing framework:** elegir **Pest** (como en el video)
-- Resto: defaults o según prefieras (SQLite está bien para empezar; puedes usar MariaDB `larabase` después)
-
-```bash
-cd ~/sites/idea
-php artisan --version
-ls -la
-```
-
-Abrir en el editor la carpeta `idea` (no mezclar con `laravel-from-scratch-2026`).
-
----
-
-### Paso 2 — Virtual host Apache (`idea.local`)
-
-Mismo patrón que `lfts.local` (Ep. 01). Crear `apache-conf/idea.local.conf` en el proyecto:
-
-```apache
-<VirtualHost *:80>
-    ServerName idea.local
-    ServerAlias www.idea.local
-
-    ServerAdmin webmaster@localhost
-    DocumentRoot /vagrant/sites/idea/public
-    DirectoryIndex index.php index.html
-
-    <Directory /vagrant/sites/idea/public>
-        Options FollowSymLinks
-        AllowOverride All
-        Require all granted
-    </Directory>
-
-    ErrorLog ${APACHE_LOG_DIR}/idea_error.log
-    CustomLog ${APACHE_LOG_DIR}/idea_access.log combined
-</VirtualHost>
-```
-
-Activar en la VM:
-
-```bash
-sudo cp ~/sites/idea/apache-conf/idea.local.conf /etc/apache2/sites-available/idea.local.conf
-sudo a2ensite idea.local.conf
-sudo apache2ctl configtest
-sudo systemctl restart apache2
-```
-
-En **Windows** (`C:\Windows\System32\drivers\etc\hosts`):
-
-```
-192.168.33.10 idea.local
-```
-
-Verificar: `http://idea.local` → landing page de Laravel.
-
----
-
-### Paso 3 — Git y GitHub
-
-```bash
-cd ~/sites/idea
-git init
-git add .
-git commit -m "initial commit"
-
-git branch -M main
-git remote add origin https://github.com/TU_USUARIO/idea.git
-git push -u origin main
-```
-
-En GitHub: **New repository** → nombre `idea` → *no* inicializar con README si ya tienes commits locales → copiar URL del remote.
-
-Comprobar:
-
-```bash
-git log --oneline
-```
-
----
-
-### Paso 4 — Laravel Forge *(opcional — solo referencia)*
-
-Jeffrey crea servidor en [forge.laravel.com](https://forge.laravel.com), conecta el repo `idea`, corre migraciones y despliega en ~15 s.
-
-Para ISW811 **no es obligatorio** tener Forge. Basta documentar:
-
-> *Forge conecta GitHub con un VPS, instala Nginx/PHP, corre `composer install` y `php artisan migrate` en cada deploy.*
-
-Si no tienes cuenta, anota en comentarios personales que omitiste este paso.
-
----
-
-### Paso 5 — Extensión Laravel (editor)
-
-En Cursor o VS Code instalar la extensión oficial **Laravel** (Laravel LLC). Se usará mucho en el proyecto final (Blade, rutas, Artisan, etc.).
-
----
-
-### Paso 6 — Laravel Pint
-
-Pint ya viene en `require-dev` (`laravel/pint`). Formatea PHP al estilo Laravel:
-
-```bash
-./vendor/bin/pint
-```
-
-Ejemplo del video: comillas dobles → simples, trailing commas, llaves en su sitio.
-
-Verificar sin modificar:
-
-```bash
-./vendor/bin/pint --test
-```
-
----
-
-### Paso 7 — Rector + rector-laravel
-
-**Rector** moderniza PHP (tipos, `declare(strict_types=1)`, early returns, dead code).
-
-```bash
-composer require rector/rector --dev
-composer require rector/rector-laravel --dev
-vendor/bin/rector init
-```
-
-Se genera `rector.php` en la raíz. Jeffrey pega una config del curso/docs con:
-
-- `skip` de carpetas (`vendor`, `storage`, etc.)
-- **PHP sets:** dead code, code quality, strict types
-- **Laravel set** vía `LaravelSetProvider` de `rector-laravel`
-
-Dry-run:
-
-```bash
-vendor/bin/rector process --dry-run
-```
-
-Aplicar (en el video ~26 archivos, sobre todo `strict_types`):
-
-```bash
-vendor/bin/rector process
-```
-
-> Copia la config exacta del código fuente del curso o de [rector-laravel docs](https://github.com/driftingly/rector-laravel) — no hace falta memorizar cada regla.
-
----
-
-### Paso 8 — Script Composer `format`
-
-En `composer.json`, sección `"scripts"`, agregar:
-
-```json
-"format": [
-    "vendor/bin/rector",
-    "vendor/bin/pint"
-]
-```
-
-Orden: primero **Rector** (refactor), luego **Pint** (estilo).
-
-Ejecutar:
-
-```bash
-composer run format
-```
-
-Útil antes de cada commit del proyecto final.
-
----
-
-### Paso 9 — Code Rabbit *(opcional)*
-
-Extensión de IDE para revisiones de código con IA antes de commitear. Jeffrey la usa en cada lección del proyecto final.
-
-- Instalar extensión **CodeRabbit** en Cursor/VS Code
-- Conectar con GitHub
-
-Si no la usas, documenta: *"Omitido — herramienta opcional del workflow profesional."*
-
----
-
-### Paso 10 — Laravel Boost
-
-Paquete first-party de Laravel para desarrollo asistido por IA (MCP: docs, Artisan, Tinker, queries, browser logs).
-
-```bash
-composer require laravel/boost --dev
-php artisan boost:install
-```
-
-El asistente pregunta editor (Cursor), agentes, y genera guidelines según tu stack (Pest, Tailwind, Pint, etc.).
-
-En Cursor: verificar que el **MCP server** de Boost esté habilitado (Command Palette → MCP).
-
-Prueba en el panel IA: *"What tools in my project are available to you?"* o *"Which routes do I currently have registered?"*
-
----
-
-### Paso 11 — Commit final del episodio
-
-```bash
-git add .
-git commit -m "episodio-23: add various tooling"
-git push
-```
-
----
-
-### Conceptos — herramientas del episodio
-
-| Herramienta | Rol |
-|-------------|-----|
-| **Pint** | Formateo automático PHP (estilo Laravel) |
-| **Rector** | Upgrades y modernización de código PHP |
-| **rector-laravel** | Reglas específicas de Laravel para Rector |
-| **`composer run format`** | Alias: Rector → Pint en un comando |
-| **Code Rabbit** | Revisión de código pre-commit *(opcional)* |
-| **Laravel Boost** | Contexto MCP para IA en proyectos Laravel |
-| **Forge** | Deploy Git → servidor *(opcional)* |
-
 ### Comandos utilizados
 
 ```bash
-laravel new idea
-cd ~/sites/idea
-php artisan --version
+# Nuevo proyecto (misma carpeta activa; anterior movido a -old)
+cd ~/sites
+laravel new laravel-from-scratch-2026   # o mover -old y crear fresh
 
-# Apache idea.local (ver arriba)
-# http://idea.local
-
-git init && git add . && git commit -m "initial commit"
-git remote add origin https://github.com/TU_USUARIO/idea.git
-git push -u origin main
-
-./vendor/bin/pint
+cd ~/sites/laravel-from-scratch-2026
 composer require rector/rector --dev
-composer require rector/rector-laravel --dev
+composer require driftingly/rector-laravel --dev
 vendor/bin/rector init
-vendor/bin/rector process --dry-run
 vendor/bin/rector process
 composer run format
-
-composer require laravel/boost --dev
-php artisan boost:install
-
-git add . && git commit -m "episodio-23: add various tooling"
-git push
 ```
 
 ### Archivos modificados o creados
 
 | Archivo / carpeta | Descripción |
 |-------------------|-------------|
-| `~/sites/idea/` | Proyecto Laravel nuevo |
-| `apache-conf/idea.local.conf` | Virtual host ISW811 |
-| `.git/` + remote GitHub | Control de versiones |
-| `rector.php` | Configuración Rector |
-| `composer.json` | Script `"format"`, deps Rector/Boost |
-| `boost.json` / guidelines Boost | Generados por `boost:install` |
-| Varios `app/`, `routes/`, etc. | Modificados por Rector (`strict_types`) |
+| `~/sites/laravel-from-scratch-2026/` | Proyecto Laravel nuevo (Idea) |
+| `~/sites/laravel-from-scratch-2026-old/` | Archivo Ep. 1–22 |
+| `rector.php` | Config Rector + Laravel sets |
+| `composer.json` | `rector`, `driftingly/rector-laravel`, script `format` |
+| ~19 archivos PHP | `declare(strict_types=1)` vía Rector |
 
 ### Evidencia
 
-| Captura | Archivo |
-|---------|---------|
-| `laravel new idea` + estructura / `idea.local` en navegador | `ep23-proyecto-nuevo.png` |
-| Repo en GitHub con commits | `ep23-github-repo.png` |
-| `./vendor/bin/pint` o `composer run format` | `ep23-pint-format.png` |
-| `rector process` (~26 files) | `ep23-rector.png` |
-| `php artisan boost:install` / MCP en Cursor | `ep23-boost.png` |
-| Forge deploy *(si aplica)* | `ep23-forge.png` |
+![Rector — rector.php y 19 archivos modificados](./img/ep23-rector.png)
 
-![Proyecto Idea — pendiente](./img/ep23-proyecto-nuevo.png)
+| Captura | Archivo | Estado |
+|---------|---------|--------|
+| Rector config + `process` | `ep23-rector.png` | ✅ |
+| Proyecto nuevo / landing | `ep23-proyecto-nuevo.png` | Pendiente |
+| GitHub | `ep23-github-repo.png` | Pendiente |
+| `composer run format` | `ep23-pint-format.png` | Pendiente |
+| Laravel Boost *(si aplica)* | `ep23-boost.png` | Opcional |
 
 ### Problemas y soluciones
 
 | Problema | Solución |
 |----------|----------|
-| `idea.local` no carga | Revisar vhost, `hosts` Windows, `sudo systemctl restart apache2` |
-| `git push` rechazado | Repo GitHub vacío sin README conflictivo; usar `git pull --rebase` si hay README remoto |
-| Rector modifica demasiado | Usar `--dry-run` primero; ajustar `skip` en `rector.php` |
-| `boost:install` falla | PHP 8.3+, `composer update` previo |
-| Sin cuenta Forge / Code Rabbit | Omitir y documentar en comentarios personales |
+| Confusión de carpetas | `-old` = práctica; activo = Idea + docs |
+| Rector toca muchos archivos | Normal al inicio; usar `--dry-run` primero |
+| Apache sigue apuntando al `-old` | Actualizar `DocumentRoot` en `lfts.local.conf` |
 
 ### Comentarios personales
 
-Ep. 22 quedó inconcluso (browser tests lentos en VM). El proyecto **Idea** es un repo **nuevo** — el CRUD de práctica sigue en `laravel-from-scratch-2026`. Ep. 24 entra en modelos (`Idea`, `Step`, `IdeaStatus`).
+Se conservó el trabajo de 22 episodios en `-old` sin mezclarlo con el Laravel fresco. Rector dejó el código listo con `strict_types` antes de modelar Idea en Ep. 24. Forge y Code Rabbit son opcionales para ISW811; Pint + Rector + Git cubren lo esencial del workflow.
 
 ### Commit Git
 
 ```
-episodio-23: setup proyecto Idea, GitHub y tooling (Pint, Rector, Boost)
+episodio-23: proyecto Idea, Rector/rector-laravel y composer run format
 ```
 
-### Checklist — completar en la VM
+### Checklist — Ep. 23
 
-- [ ] `laravel new idea` con Pest
-- [ ] `http://idea.local` muestra landing Laravel
-- [ ] `git push` a GitHub
-- [ ] `composer run format` (Rector + Pint)
-- [ ] `php artisan boost:install`
-- [ ] Capturas en `docs/img/ep23-*.png` *(copiar al repo de documentación o al proyecto `idea/docs` si creas uno)*
-- [ ] Commit `episodio-23: add various tooling`
+- [x] Proyecto Laravel nuevo (Idea) en carpeta activa
+- [x] Proyecto anterior en `laravel-from-scratch-2026-old`
+- [x] Rector + `rector.php` + `rector process` (19 files)
+- [x] Script `composer run format`
+- [ ] GitHub push *(si aplica)*
+- [ ] Laravel Boost / Code Rabbit / Forge *(opcionales)*
 
 ---
 

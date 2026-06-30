@@ -1,41 +1,28 @@
-# Documentación — Proyecto 1 ISW811
+# Documentación — Proyecto ISW811 / Laravel From Scratch 2026
 
-Esta carpeta forma parte del proyecto Laravel en la raíz `laravel-from-scratch-2026/`. Aquí se centraliza toda la documentación técnica y las evidencias del curso **Laravel From Scratch 2026**.
+Hub único de documentación del curso. El código del proyecto final **Idea** (Ep. 23+) vive en la **misma carpeta** que `docs/`; la práctica Ep. 1–22 está archivada en `laravel-from-scratch-2026-old`.
+
+> Ver [estructura-proyectos.md](estructura-proyectos.md)
 
 ## Ubicación
 
-| Sistema | Ruta |
-|---------|------|
-| Windows (host) | `C:\Users\yeide\isw811\VMs\webserver\sites\laravel-from-scratch-2026\docs` |
-| Debian (VM) | `~/sites/laravel-from-scratch-2026/docs` |
+| Sistema | Proyecto activo + docs | Archivo Ep. 1–22 |
+|---------|------------------------|------------------|
+| Windows | `...\sites\laravel-from-scratch-2026\docs` | `...\sites\laravel-from-scratch-2026-old` |
+| VM | `~/sites/laravel-from-scratch-2026/docs` | `~/sites/laravel-from-scratch-2026-old` |
 
 ## Archivos
 
 | Archivo | Contenido |
 |---------|-----------|
-| [entregable01.md](entregable01.md) | Episodios 1–16 — Entregable 1 |
-| [entregable02.md](entregable02.md) | Episodios 17–30 — Entregable 2 |
-| [entregable03.md](entregable03.md) | Episodios 31–43 — Entregable 3 |
-| [img/](img/) | Capturas de pantalla |
+| [estructura-proyectos.md](estructura-proyectos.md) | `-2026` vs `-old`, Apache, tar.gz |
+| [entregable01.md](entregable01.md) | Episodios 1–16 |
+| [entregable02.md](entregable02.md) | Episodios 17–30 |
+| [entregable03.md](entregable03.md) | Episodios 31–43 |
+| [img/](img/) | Todas las capturas |
 
-## Convención de imágenes
+## Flujo Ep. 23+
 
-Desde `entregable01.md`:
-
-```markdown
-![Descripción](./img/ep03-about.png)
-```
-
-Desde `README.md` en la raíz del proyecto:
-
-```markdown
-![Descripción](docs/img/ep03-about.png)
-```
-
-## Flujo de documentación
-
-1. Completar un episodio del curso en Laracasts.
-2. Enviar capturas o salidas de terminal en la sesión de trabajo.
-3. Actualizar la sección del episodio en `entregable01.md`.
-4. Guardar imágenes en `docs/img/`.
-5. Commit en la raíz: `episodio-XX: descripción`.
+1. Código en **`~/sites/laravel-from-scratch-2026`**
+2. Documentación en **`docs/`** (esta carpeta)
+3. Capturas en **`docs/img/`**

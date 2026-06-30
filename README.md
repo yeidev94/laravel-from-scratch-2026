@@ -14,9 +14,17 @@
 
 ## Descripción
 
-Proyecto del curso **Laravel From Scratch 2026**. El código Laravel y la documentación técnica (Markdown + capturas) viven en esta misma carpeta, versionados con Git.
+Curso **Laravel From Scratch 2026** — ISW811.
 
-Documentación detallada por episodio: **[docs/entregable01.md](docs/entregable01.md)**
+| Qué | Dónde |
+|-----|-------|
+| **Documentación** (entregables, capturas, episodios 1–43) | **`docs/` en esta carpeta** |
+| **Código eps. 23–43** (proyecto final **Idea**) | **Esta carpeta** (`laravel-from-scratch-2026`) |
+| **Código eps. 1–22** (CRUD, auth, gates, colas…) | `laravel-from-scratch-2026-old` → `http://lfts.local` *(archivo)* |
+
+Detalle: **[docs/estructura-proyectos.md](docs/estructura-proyectos.md)**
+
+Documentación por episodio: **[docs/entregable01.md](docs/entregable01.md)** · **[docs/entregable02.md](docs/entregable02.md)**
 
 ---
 
@@ -29,45 +37,27 @@ Documentación detallada por episodio: **[docs/entregable01.md](docs/entregable0
 | **Vagrant** | `C:\Users\yeide\isw811\VMs\webserver` |
 | **Carpeta compartida (host)** | `C:\Users\yeide\isw811\VMs\webserver\sites` |
 | **Carpeta compartida (VM)** | `~/sites` |
-| **Proyecto (host)** | `C:\Users\yeide\isw811\VMs\webserver\sites\laravel-from-scratch-2026` |
-| **Proyecto (VM)** | `~/sites/laravel-from-scratch-2026` |
-| **Base de datos** | `larabase` / usuario `larauser` |
-| **Dominio local** | `http://lfts.local` |
+| **Proyecto Idea activo (host/VM)** | `laravel-from-scratch-2026` |
+| **Archivo práctica Ep. 1–22** | `laravel-from-scratch-2026-old` |
+| **Documentación** | `laravel-from-scratch-2026/docs` |
 | **IP VM** | `192.168.33.10` |
 
 > El Workshop 03 dejó configurado `larasite.local` en la misma VM. No hay conflicto: Apache enruta por `ServerName` (`lfts.local` vs `larasite.local`).
 
 ---
 
-## Estructura del proyecto
+## Estructura del repositorio
 
 ```
-laravel-from-scratch-2026/
-├── app/
-├── bootstrap/
-├── config/
-├── database/
-├── docs/
-│   ├── entregable01.md       # Episodios 1–16
-│   ├── entregable02.md
-│   ├── entregable03.md
-│   └── img/                  # Capturas de pantalla
-├── apache-conf/
-│   └── lfts.local.conf       # Virtual host Apache
-├── public/
-├── resources/
-│   └── views/
-│       ├── welcome.blade.php
-│       ├── about.blade.php
-│       └── contact.blade.php
-├── routes/
-│   └── web.php
-├── tests/
-├── .git/
-├── artisan
-├── composer.json
-├── package.json
-└── README.md
+~/sites/
+├── laravel-from-scratch-2026/       ← Idea (Ep. 23+) + docs/
+│   ├── docs/
+│   ├── rector.php
+│   └── composer.json                ← format: rector + pint
+│
+└── laravel-from-scratch-2026-old/   ← Práctica Ep. 1–22 (archivo)
+    ├── app/Http/Controllers/IdeaController.php
+    └── apache-conf/lfts.local.conf
 ```
 
 ---
@@ -112,13 +102,15 @@ sudo apache2ctl configtest
 sudo systemctl restart apache2
 ```
 
-**Archivo `hosts` en Windows** (`C:\Windows\System32\drivers\etc\hosts`):
+**Windows `hosts`:**
 
 ```
 192.168.33.10 lfts.local
+192.168.33.10 idea.local
 ```
 
-Acceso: **http://lfts.local**
+Acceso app práctica: **http://lfts.local**  
+Acceso proyecto Idea: **http://idea.local** *(después del Ep. 23)*
 
 ### Permisos (si aparece error 500)
 

@@ -14,6 +14,8 @@
 
 En este entregable se completa el proyecto final “Idea”: modales con Alpine.js, formularios avanzados, enlaces múltiples, pasos accionables, carga de imágenes, clases Action, autorización reforzada, edición de perfil y documentación del proceso de despliegue.
 
+> **Código:** `~/sites/idea` · **Documentación y capturas:** `~/sites/laravel-from-scratch-2026/docs/` ([estructura-proyectos.md](./estructura-proyectos.md))
+
 ---
 
 ## Índice de episodios
