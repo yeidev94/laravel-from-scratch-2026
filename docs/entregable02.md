@@ -35,7 +35,7 @@ Ver [estructura-proyectos.md](./estructura-proyectos.md) para rutas, Apache, Git
 | 22 | How to Get Started Testing Your Code | Inconcluso | [Episodio 22](#episodio-22) |
 | 23 | Final Project Setup | Completado | [Episodio 23](#episodio-23) |
 | 24 | Design Your Model Layer | Completado | [Episodio 24](#episodio-24) |
-| 25 | Tailwind Theme Setup And Initial UI | En progreso | — |
+| 25 | Tailwind Theme Setup And Initial UI | Completado | [Episodio 25](#episodio-25) |
 | 26 | Browser Testing Registration Forms With Pest | Pendiente | — |
 | 27 | Flash Messaging and Interactivity with AlpineJS | Pendiente | — |
 | 28 | Idea Cards | Pendiente | — |
@@ -1270,13 +1270,168 @@ episodio-24: modelos Idea y Step, IdeaStatus y tests
 
 ---
 
-## Episodios 25–30: Proyecto final (continuación)
+## Episodio 25: Tailwind Theme Setup And Initial UI {#episodio-25}
+
+### Resumen
+
+Se montó la **UI inicial** del proyecto Idea: tema Tailwind 4 personalizado, layout con nav, componentes de formulario reutilizables y las vistas de **registro** y **login** funcionando en `http://lfts.local`. El registro crea el usuario en BD y hace login automático.
+
+### Tema Tailwind — `resources/css/app.css`
+
+Tailwind 4 con `@theme` (variables de color en OKLCH) y fuente Instrument Sans:
+
+```css
+@import 'tailwindcss';
+@import '../components/btn.css' layer(components);
+@import '../components/form.css' layer(components);
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+    --color-background: oklch(0.12 0 0);
+    --color-foreground: oklch(0.95 0 0);
+    --color-primary: oklch(0.65 0.15 160);
+    --color-border: oklch(0.24 0 0);
+    /* ... */
+}
+```
+
+Colores expuestos como utilidades (`bg-background`, `text-foreground`, `border-border`, etc.) usados en el layout.
+
+### Layout y nav
+
+**`components/layout/layout.blade.php`** — `@props(['title' => 'Idea'])`, `@vite([...])`, `<x-layout.nav />` y `{{ $slot }}`.
+
+**`components/layout/nav.blade.php`** — logo + enlaces condicionados con `@guest` / `@auth`:
+
+```blade
+@guest
+    <a href="/login">Sign In In</a>
+    <a href="/register" class="btn">Register</a>
+@endguest
+
+@auth
+    <form action="/logout" method="POST">@csrf
+        <button type="submit">Log Out</button>
+    </form>
+@endauth
+```
+
+### Componentes de formulario reutilizables
+
+- **`components/form/form.blade.php`** — `@props(['title', 'description'])`, tarjeta centrada con título/descripción y `{{ $slot }}`.
+- **`components/form/field.blade.php`** — `@props(['label', 'name', 'type' => 'text'])`, `<label>` + `<input>` con `old()` y bloque `@error`.
+
+### Vistas de auth
+
+**`auth/register.blade.php`:**
+
+```blade
+<x-layout title="Register">
+    <x-form title="Register an account" description="Start tracking your ideas today.">
+        <form method="POST" action="/register" class="space-y-6">
+            @csrf
+            <x-form.field name="name" label="What is your name?" />
+            <x-form.field name="email" label="Email" type="email" />
+            <x-form.field name="password" label="Password" type="password" />
+            <button type="submit" class="btn mt-2 h-10">Create Account</button>
+        </form>
+    </x-form>
+</x-layout>
+```
+
+**`auth/login.blade.php`** — misma estructura con campos email/password y botón "Sign In".
+
+### Rutas y controlador
+
+`routes/web.php` agrupa register/login bajo middleware `guest` y logout bajo `auth`:
+
+```php
+Route::middleware('guest')->group(function () {
+    Route::get('/register', [RegisteredUserController::class, 'create']);
+    Route::post('/register', [RegisteredUserController::class, 'store']);
+    Route::get('/login', [SessionsController::class, 'create']);
+    Route::post('/login', [SessionsController::class, 'store']);
+});
+
+Route::post('/logout', [SessionsController::class, 'destroy'])->middleware('auth');
+```
+
+`RegisteredUserController::store()` valida (`name`, `email` único, `password` con `Rules\Password::defaults()`), crea el usuario, hace `Auth::login()` y redirige a `/` con flash `success`.
+
+### Comandos utilizados
+
+```bash
+cd ~/sites/laravel-from-scratch-2026
+npm run dev     # Vite dev server (http://localhost:5173)
+# o
+npm run build   # assets compilados para Apache
+```
+
+### Archivos modificados o creados
+
+| Archivo | Rol |
+|---------|-----|
+| `resources/css/app.css` | Tema Tailwind 4 + `@theme` |
+| `resources/views/components/layout/layout.blade.php` | Layout base + `@vite` |
+| `resources/views/components/layout/nav.blade.php` | Nav con `@guest`/`@auth` |
+| `resources/views/components/form/form.blade.php` | Tarjeta de formulario |
+| `resources/views/components/form/field.blade.php` | Campo input + error |
+| `resources/views/auth/register.blade.php` | Vista registro |
+| `resources/views/auth/login.blade.php` | Vista login |
+| `routes/web.php` | Rutas guest/auth |
+| `app/Http/Controllers/Auth/RegisteredUserController.php` | Registro + login |
+
+### Evidencia
+
+![Registro en lfts.local + Vite + Network](./img/ep25-register-form.png)
+
+![Registro funcional — usuario creado en BD (DBeaver) + validación de password](./img/ep25-register-dbeaver.png)
+
+### Problemas y soluciones
+
+**Vite lento en la VM.** Desde este episodio, con `npm run dev` corriendo (Vite en `:5173`), los cambios **cargan muy lento** al recargar en el navegador — el HMR/servidor de Vite dentro de Vagrant tiene latencia alta contra el host Windows. 
+
+Mitigaciones:
+- Usar **`npm run build`** y servir los assets ya compilados por Apache cuando la lentitud del dev server molesta (no hay recarga en vivo, pero carga rápido).
+- Reservar `npm run dev` solo mientras se ajusta CSS activamente.
+- Aceptar la latencia como limitación del entorno Vagrant (carpeta compartida), igual que en el Ep. 22 con los browser tests.
+
+### Comentarios personales
+
+Con el layout, los componentes `x-form` / `x-form.field` y el tema Tailwind, las próximas vistas (ideas, tarjetas) se arman rápido. El registro ya persiste en `users` y autentica. La lentitud de Vite en la VM es el principal fastidio del entorno.
+
+### Commit Git
+
+```bash
+cd ~/sites/laravel-from-scratch-2026
+git add .
+git commit -m "episodio-25: tema Tailwind, layout y vistas de registro/login"
+git push
+```
+
+```
+episodio-25: tema Tailwind, layout y vistas de registro/login
+```
+
+### Checklist — Ep. 25
+
+- [x] Tema Tailwind 4 en `app.css`
+- [x] Layout + nav con `@guest`/`@auth`
+- [x] Componentes `x-form` y `x-form.field`
+- [x] Vistas register y login
+- [x] Rutas guest/auth y `RegisteredUserController`
+- [x] Registro persiste en BD (evidencia DBeaver)
+- [x] Evidencias `ep25-register-form.png`, `ep25-register-dbeaver.png`
+
+---
+
+## Episodios 26–30: Proyecto final (continuación)
 
 Documentar cada episodio del 23 al 30 siguiendo la plantilla de arriba. Temas principales:
 
 - **23:** Setup del repo, GitHub, herramientas (Pint, Rector, Boost) — [ver Ep. 23](#episodio-23)
 - **24:** Modelos Idea, Step, IdeaStatus, factories y tests — [ver Ep. 24](#episodio-24)
-- **25:** Tema Tailwind, componentes UI, registro/login
+- **25:** Tema Tailwind, componentes UI, registro/login — [ver Ep. 25](#episodio-25)
 - **26:** Browser tests de registro
 - **27:** Flash messages con Alpine.js
 - **28:** Tarjetas de ideas y componentes x-card

@@ -100,6 +100,8 @@ Ver [estructura-proyectos.md](../estructura-proyectos.md).
 | `ep23-boost.png` | 23 | Laravel Boost *(opcional)* |
 | `ep24-enum-tinker.png` | 24 | `Idea` casts + Tinker `IdeaStatus::Pending` |
 | `ep24-idea-test-pass.png` | 24 | `IdeaTest` PASS — `it belongs to a user` |
+| `ep25-register-form.png` | 25 | Registro en `lfts.local` + Vite + Network |
+| `ep25-register-dbeaver.png` | 25 | Registro funcional — usuario en BD (DBeaver) |
 
 ## Evidencias obligatorias — Entregable 01
 
