@@ -38,7 +38,7 @@ Ver [estructura-proyectos.md](./estructura-proyectos.md) para rutas, Apache, Git
 | 25 | Tailwind Theme Setup And Initial UI | Completado | [Episodio 25](#episodio-25) |
 | 26 | Browser Testing Registration Forms With Pest | Inconcluso | [Episodio 26](#episodio-26) |
 | 27 | Flash Messaging and Interactivity with AlpineJS | Completado | [Episodio 27](#episodio-27) |
-| 28 | Idea Cards | En progreso | [Episodio 28](#episodio-28) |
+| 28 | Idea Cards | Completado | [Episodio 28](#episodio-28) |
 | 29 | Idea Filtering | Pendiente | — |
 | 30 | Show A Single Idea | Pendiente | — |
 
@@ -1705,27 +1705,24 @@ episodio-27: Alpine.js y flash message auto-ocultable
 
 ### Resumen
 
-Se muestra el **listado de ideas** del usuario autenticado como **tarjetas** (cards) en un grid. Se crea la ruta `/ideas`, el `IdeaController@index`, la vista `ideas/index`, y se extraen dos componentes Blade reutilizables: **`x-card`** y **`x-idea.status-label`** (pill de estado con color dinámico según `IdeaStatus`).
+Se muestra el **listado de ideas** del usuario autenticado como **tarjetas** (cards) en un grid vertical. Se crea la ruta `/ideas`, el `IdeaController@index`, la vista `idea/index`, y se **extraen dos componentes Blade reutilizables**: **`x-card`** (tarjeta flexible con props y slots) y **`x-status-badge`** (pill de estado con color dinámico según `IdeaStatus`). Además se agregan ideas a un usuario mediante la **factory** (`IdeaFactory`).
 
 ### Paso 1 — Rutas
 
-`/` redirige a `/ideas`; `/ideas` requiere auth y usa un controlador resource. La ruta de login necesita **nombre** (`login`) porque el middleware `auth` redirige a `route('login')`.
+`/` redirige a `/ideas` con `Route::redirect()`; `/ideas` requiere auth. La ruta de login necesita **nombre** (`login`) porque el middleware `auth` redirige a `route('login')`.
 
 ```php
 use App\Http\Controllers\IdeaController;
 
-Route::get('/', fn () => redirect('/ideas'));
+Route::redirect('/', '/ideas');
+
+Route::get('/ideas', [IdeaController::class, 'index'])->middleware('auth');
 
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisteredUserController::class, 'create']);
     Route::post('/register', [RegisteredUserController::class, 'store']);
     Route::get('/login', [SessionsController::class, 'create'])->name('login');
     Route::post('/login', [SessionsController::class, 'store']);
-});
-
-Route::middleware('auth')->group(function () {
-    Route::get('/ideas', [IdeaController::class, 'index']);
-    Route::get('/ideas/{idea}', [IdeaController::class, 'show'])->name('ideas.show');
 });
 
 Route::post('/logout', [SessionsController::class, 'destroy'])->middleware('auth');
@@ -1736,78 +1733,170 @@ Route::post('/logout', [SessionsController::class, 'destroy'])->middleware('auth
 Ideas **scoped al usuario** vía la relación (no `Idea::all()`):
 
 ```php
+use App\Models\Idea;
+use Illuminate\Support\Facades\Auth;
+
 public function index()
 {
-    return view('ideas.index', [
-        'ideas' => auth()->user()->ideas,
+    $ideas = Auth::user()->ideas;
+
+    return view('idea.index', [
+        'ideas' => $ideas,
     ]);
 }
 ```
 
-### Paso 3 — Vista `resources/views/ideas/index.blade.php`
+### Paso 3 — Vista `resources/views/idea/index.blade.php`
 
-Header + grid + `@forelse`:
+Header + columna de tarjetas con `@forelse`. Cada idea se pasa al componente `x-card` mediante props; el caso vacío también usa `x-card` como contenedor:
 
 ```blade
-<x-layout title="Ideas">
-    <div>
-        <header class="text-center">
-            <h1 class="text-2xl font-bold">Your Ideas</h1>
-            <p class="text-muted-foreground">Track and manage your ideas.</p>
-        </header>
-
-        <div class="mt-6 grid lg:grid-cols-2 gap-4">
-            @forelse ($ideas as $idea)
-                <x-card href="/ideas/{{ $idea->id }}">
-                    <h3 class="text-lg text-foreground">{{ $idea->title }}</h3>
-
-                    <div class="mt-1">{{ $idea->description }}</div>
-
-                    <x-idea.status-label :status="$idea->status" class="mt-2" />
-
-                    <div class="mt-2">{{ $idea->created_at->diffForHumans() }}</div>
-                </x-card>
-            @empty
-                <p>No ideas at this time.</p>
-            @endforelse
+<x-layout title="Your Ideas">
+    <header class="mb-6 flex flex-col gap-4 sm:mb-8 md:mb-10 md:flex-row md:items-end md:justify-between">
+        <div class="space-y-1">
+            <h1 class="text-2xl font-bold tracking-tight md:text-3xl">Your Ideas</h1>
+            <p class="text-sm text-muted-foreground md:text-base">
+                Capture your ideas and share them with the world.
+            </p>
         </div>
+    </header>
+
+    <div class="flex flex-col gap-3 sm:gap-4 md:gap-5">
+        @forelse ($ideas as $idea)
+            <x-card
+                :title="$idea->title"
+                :description="$idea->description"
+                :status="$idea->status"
+                :created-at="$idea->created_at"
+            />
+        @empty
+            <x-card tag="div" class="py-10 text-center md:py-14">
+                <p class="text-base font-medium text-foreground md:text-lg">No ideas yet</p>
+                <p class="mt-2 text-sm text-muted-foreground md:text-base">
+                    When you add ideas, they will show up here.
+                </p>
+            </x-card>
+        @endforelse
     </div>
 </x-layout>
 ```
 
 ### Paso 4 — Componente `x-card` — `components/card.blade.php`
 
-Se extrae la tarjeta a componente; como es clickeable se usa `<a>`:
+Componente **flexible**: acepta props (`title`, `description`, `status`, `createdAt`, `tag`) para el modo estructurado, o slots nombrados (`$heading`, `$body`, `$badge`, `$footer`) y el slot por defecto para contenido libre (como el estado vacío). El `tag` es configurable (`article` por defecto, `div` para el caso vacío):
 
 ```blade
-<a {{ $attributes->merge(['class' => 'block border border-border rounded-lg bg-card p-4 text-sm text-muted-foreground']) }}>
-    {{ $slot }}
-</a>
-```
-
-### Paso 5 — Componente `x-idea.status-label` — `components/idea/status-label.blade.php`
-
-Pill con color según el estado. `@props` con default `pending`:
-
-```blade
-@props(['status' => \App\IdeaStatus::Pending])
+@props([
+    'title' => null,
+    'description' => null,
+    'status' => null,
+    'createdAt' => null,
+    'tag' => 'article',
+])
 
 @php
-    $classes = 'inline-block rounded-full text-xs font-medium px-2 py-0.5 border';
+    $hasStructuredContent = filled($title)
+        || filled($description)
+        || filled($status)
+        || isset($heading)
+        || isset($body)
+        || isset($badge);
+@endphp
 
-    $classes .= match ($status) {
-        \App\IdeaStatus::Pending    => ' bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
-        \App\IdeaStatus::InProgress => ' bg-blue-500/10 text-blue-500 border-blue-500/20',
-        \App\IdeaStatus::Completed  => ' bg-primary/10 text-primary border-primary/20',
-    };
+<{{ $tag }} {{ $attributes->class(['card']) }}>
+    @if ($hasStructuredContent)
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+            <div class="min-w-0 flex-1 space-y-2">
+                @isset($heading)
+                    {{ $heading }}
+                @elseif (filled($title))
+                    <h2 class="card-title">{{ $title }}</h2>
+                @endif
+
+                @isset($body)
+                    {{ $body }}
+                @elseif (filled($description))
+                    <p class="card-text line-clamp-3 md:line-clamp-none">
+                        {{ $description }}
+                    </p>
+                @endif
+            </div>
+
+            @isset($badge)
+                <div class="self-start">{{ $badge }}</div>
+            @elseif (filled($status))
+                <x-status-badge :status="$status" class="self-start">
+                    {{ $status instanceof \App\IdeaStatus ? $status->label() : $status }}
+                </x-status-badge>
+            @endisset
+        </div>
+    @elseif (! $slot->isEmpty())
+        {{ $slot }}
+    @endif
+
+    @isset($footer)
+        <footer class="mt-4 ...">{{ $footer }}</footer>
+    @elseif ($createdAt)
+        <footer class="mt-4 flex items-center justify-between border-t border-border pt-3 text-xs text-muted-foreground md:mt-5 md:pt-4 md:text-sm">
+            <time datetime="{{ $createdAt->toDateString() }}">
+                {{ $createdAt->diffForHumans() }}
+            </time>
+        </footer>
+    @endisset
+</{{ $tag }}>
+```
+
+### Paso 5 — Componente `x-status-badge` — `components/status-badge.blade.php`
+
+Pill con color según el estado. Normaliza el valor (acepta el enum `IdeaStatus` o un string) y asigna clases con `if`; el texto usa el slot o el `label()` del enum:
+
+```blade
+@props(['status' => 'pending'])
+
+@php
+    $statusValue = $status instanceof \App\IdeaStatus
+        ? $status->value
+        : (string) $status;
+
+    $classes = 'inline-block rounded-full border px-2 py-1 text-xs font-medium';
+
+    if ($statusValue === 'pending') {
+        $classes .= ' bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
+    }
+
+    if ($statusValue === 'in-progress' || $statusValue === 'in_progress') {
+        $classes .= ' bg-blue-500/10 text-blue-500 border-blue-500/20';
+    }
+
+    if ($statusValue === 'completed') {
+        $classes .= ' bg-primary/10 text-primary border-primary/20';
+    }
 @endphp
 
 <span {{ $attributes->merge(['class' => $classes]) }}>
-    {{ $status->label() }}
+    {{ $slot->isEmpty() ? (\App\IdeaStatus::tryFrom($statusValue)?->label() ?? $statusValue) : $slot }}
 </span>
 ```
 
-### Paso 6 — Datos de prueba (Tinker)
+### Paso 6 — Ideas por factory
+
+`IdeaFactory` genera `status` aleatorio a partir del enum y asocia un `user_id`:
+
+```php
+public function definition(): array
+{
+    return [
+        'title' => fake()->sentence(),
+        'description' => fake()->paragraph(),
+        'links' => [fake()->url()],
+        'image_path' => fake()->imageUrl(),
+        'status' => fake()->randomElement(IdeaStatus::cases())->value,
+        'user_id' => User::factory(),
+    ];
+}
+```
+
+Datos de prueba desde Tinker (asociando a tu usuario):
 
 ```bash
 php artisan tinker
@@ -1815,19 +1904,21 @@ php artisan tinker
 >>> App\Models\Idea::factory(3)->create(['user_id' => 8]);
 ```
 
-Ajustar estados en BD (DBeaver) para ver los tres colores: `pending`, `in-progress`, `completed`.
+Se puede forzar el estado para ver los tres colores: `->create(['user_id' => 8, 'status' => 'in-progress'])`.
 
 ### Conceptos clave
 
 | Elemento | Uso |
 |----------|-----|
-| `redirect('/ideas')` en `/` | Homepage temporal |
+| `Route::redirect('/', '/ideas')` | Homepage temporal |
 | `->name('login')` | El middleware `auth` redirige a `route('login')` |
-| `auth()->user()->ideas` | Query scoped al usuario (seguridad) |
+| `Auth::user()->ideas` | Query scoped al usuario (seguridad) |
 | `@forelse / @empty` | Listado con fallback vacío |
+| Props + slots nombrados | `x-card` reutilizable (estructurado o libre) |
+| `:created-at` → `$createdAt` | kebab-case en la vista → camelCase en el prop |
+| `$attributes->class([...])` / `->merge()` | Clases del componente sobreescribibles |
 | `diffForHumans()` | Timestamp legible (Carbon) |
-| `$attributes->merge()` | Clases del componente sobreescribibles |
-| `match ($status)` | Color del pill según enum |
+| `IdeaStatus::tryFrom()` | Enum a label sin romper con valores desconocidos |
 
 ### Comandos utilizados
 
@@ -1841,57 +1932,64 @@ npm run build          # o npm run dev
 
 | Archivo | Rol |
 |---------|-----|
-| `routes/web.php` | `/` → `/ideas`, ruta index/show, login nombrada |
-| `app/Http/Controllers/IdeaController.php` | `index()` con ideas del usuario |
-| `resources/views/ideas/index.blade.php` | Grid de tarjetas |
-| `resources/views/components/card.blade.php` | Componente `x-card` |
-| `resources/views/components/idea/status-label.blade.php` | Pill de estado |
+| `routes/web.php` | `/` → `/ideas`, ruta `/ideas` con auth, login nombrada |
+| `app/Http/Controllers/IdeaController.php` | `index()` con `Auth::user()->ideas` |
+| `resources/views/idea/index.blade.php` | Grid/columna de tarjetas |
+| `resources/views/components/card.blade.php` | Componente `x-card` (props + slots) |
+| `resources/views/components/status-badge.blade.php` | Pill de estado `x-status-badge` |
+| `database/factories/IdeaFactory.php` | `status` desde enum + `user_id` |
 
 ### Evidencia
 
-*[Pendiente — capturas al implementar en la VM.]*
+**1. Creación de ideas con factory (Tinker) y layout base**
 
-| Captura sugerida | Archivo |
-|------------------|---------|
-| Grid de tarjetas en `/ideas` | `ep28-idea-cards.png` |
-| Pills de estado (pending/in-progress/completed) | `ep28-status-labels.png` |
+![Ideas creadas con factory en Tinker](img/ep28-factory-tinker.png)
+
+**2. Listado de tarjetas de ideas con pills de estado por color**
+
+![Grid de tarjetas de ideas con status badges](img/ep28-idea-cards.png)
+
+| Captura | Archivo |
+|---------|---------|
+| Factory + Tinker / layout | `ep28-factory-tinker.png` |
+| Tarjetas de ideas con estados (pending/in-progress/completed) | `ep28-idea-cards.png` |
 
 ### Problemas y soluciones
 
 | Problema | Solución |
 |----------|----------|
 | `Route [login] not defined` | Nombrar la ruta login: `->name('login')` |
-| Estilos sin cargar | Correr `npm run dev` / `npm run build` |
-| Ideas de otros usuarios | Usar `auth()->user()->ideas`, no `Idea::all()` |
-| Pill sin color | `match` debe cubrir los 3 casos del enum |
+| `"InProgress" is not a valid backing value for enum App\IdeaStatus` | Guardar el **value** del enum (`in-progress`), no el nombre; `status-badge` normaliza con `tryFrom()` |
+| Estilos sin cargar | Correr `npm run build` (o `npm run dev`) |
+| Ideas de otros usuarios | Usar `Auth::user()->ideas`, no `Idea::all()` |
 
 ### Comentarios personales
 
-*[Completar tras implementar en VM.]*
+Extraer `x-card` y `x-status-badge` dejó la vista `index` muy limpia: solo describe *qué* mostrar, no *cómo*. Hacer `x-card` flexible (props para el caso normal y slots para el estado vacío) evita duplicar el contenedor. El detalle importante fue guardar el **value** del enum (`in-progress`) y no el nombre del case, y que el badge acepte tanto el enum como un string para no acoplarse. La factory con `user_id` hace trivial poblar datos de prueba para ver los tres colores.
 
 ### Commit Git
 
 ```bash
 cd ~/sites/laravel-from-scratch-2026
 git add .
-git commit -m "episodio-28: tarjetas de ideas, x-card y status-label"
+git commit -m "episodio-28: tarjetas de ideas con x-card y x-status-badge + factory"
 git push
 ```
 
 ```
-episodio-28: tarjetas de ideas, x-card y status-label
+episodio-28: tarjetas de ideas con x-card y x-status-badge + factory
 ```
 
 ### Checklist — Ep. 28
 
-- [ ] Ruta `/` → `/ideas` y ruta index/show
-- [ ] Login nombrada (`->name('login')`)
-- [ ] `IdeaController@index` con `auth()->user()->ideas`
-- [ ] Vista `ideas/index` con grid + `@forelse`
-- [ ] Componente `x-card`
-- [ ] Componente `x-idea.status-label` con color dinámico
-- [ ] Ideas de prueba en BD
-- [ ] Capturas `ep28-*.png`
+- [x] Ruta `/` → `/ideas` y `/ideas` con auth
+- [x] Login nombrada (`->name('login')`)
+- [x] `IdeaController@index` con `Auth::user()->ideas`
+- [x] Vista `idea/index` con `@forelse` + `x-card`
+- [x] Componente `x-card` (props + slots)
+- [x] Componente `x-status-badge` con color dinámico
+- [x] Ideas de prueba por factory
+- [x] Capturas `ep28-*.png`
 - [ ] Commit `episodio-28: ...`
 
 ---

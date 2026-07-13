@@ -104,6 +104,8 @@ Ver [estructura-proyectos.md](../estructura-proyectos.md).
 | `ep25-register-dbeaver.png` | 25 | Registro funcional — usuario en BD (DBeaver) |
 | `ep26-browser-tests.png` | 26 | Browser tests register/login/logout/validación (inconcluso — VM lenta) |
 | `ep27-alpine-toggle.png` | 27 | Alpine.js — toggle + flash message auto-ocultable |
+| `ep28-factory-tinker.png` | 28 | `Idea::factory()->create()` en Tinker + layout base |
+| `ep28-idea-cards.png` | 28 | Grid de tarjetas `x-card` con pills `x-status-badge` por color |
 
 ## Evidencias obligatorias — Entregable 01
 
