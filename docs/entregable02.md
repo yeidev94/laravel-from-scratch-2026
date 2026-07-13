@@ -37,7 +37,7 @@ Ver [estructura-proyectos.md](./estructura-proyectos.md) para rutas, Apache, Git
 | 24 | Design Your Model Layer | Completado | [Episodio 24](#episodio-24) |
 | 25 | Tailwind Theme Setup And Initial UI | Completado | [Episodio 25](#episodio-25) |
 | 26 | Browser Testing Registration Forms With Pest | Inconcluso | [Episodio 26](#episodio-26) |
-| 27 | Flash Messaging and Interactivity with AlpineJS | Pendiente | — |
+| 27 | Flash Messaging and Interactivity with AlpineJS | Completado | [Episodio 27](#episodio-27) |
 | 28 | Idea Cards | Pendiente | — |
 | 29 | Idea Filtering | Pendiente | — |
 | 30 | Show A Single Idea | Pendiente | — |
@@ -1588,7 +1588,120 @@ episodio-26: browser tests de registro, login y logout (inconcluso — VM lenta)
 
 ---
 
-## Episodios 27–30: Proyecto final (continuación)
+## Episodio 27: Flash Messaging and Interactivity with AlpineJS {#episodio-27}
+
+### Resumen
+
+Se instaló **Alpine.js** para interactividad ligera en el frontend y se implementó un **mensaje flash** que aparece tras el registro (`->with('success', ...)`) y se **auto-oculta** a los 3 segundos con Alpine. Se probó Alpine con un **toggle** de ejemplo antes de aplicarlo al flash.
+
+### Instalar Alpine — `resources/js/bootstrap.js`
+
+```js
+import axios from 'axios';
+import Alpine from 'alpinejs';
+
+window.Alpine = Alpine;
+Alpine.start();
+
+window.axios = axios;
+window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+```
+
+`resources/js/app.js` importa `./bootstrap`, y el layout ya carga los assets con `@vite(['resources/css/app.css', 'resources/js/app.js'])`.
+
+Dependencia en `package.json`: `"alpinejs": "^3.15.12"`.
+
+### Prueba con toggle
+
+Antes del flash se validó Alpine con un toggle (`x-data`, `@click`, `x-show`):
+
+```blade
+<div x-data="{ show: true }">
+    <button @click="show = !show" class="btn">Toggle</button>
+    <p x-show="show">you can see me</p>
+</div>
+```
+
+Al hacer clic en **Toggle**, el texto se muestra/oculta sin recargar — confirma que Alpine está activo. *(Luego se dejó comentado en el layout.)*
+
+### Flash message auto-ocultable — `layout.blade.php`
+
+```blade
+@session('success')
+    <div
+        x-data="{ show: true }"
+        x-init="setTimeout(() => show = false, 3000)"
+        x-show="show"
+        x-transition:enter="transition ease-out duration-300"
+        class="bg-blue-500 text-white p-4 rounded-md"
+    >
+        {{ $value }}
+    </div>
+@endsession
+```
+
+| Directiva | Función |
+|-----------|---------|
+| `@session('success')` | Renderiza solo si existe el flash `success` |
+| `x-data="{ show: true }"` | Estado local Alpine |
+| `x-init="setTimeout(...)"` | Oculta a los 3 s |
+| `x-show="show"` | Muestra/oculta según estado |
+| `x-transition:enter` | Animación de entrada |
+
+El flash lo dispara `RegisteredUserController::store()` con `redirect('/')->with('success', 'Registration complete.')`.
+
+### Comandos utilizados
+
+```bash
+cd ~/sites/laravel-from-scratch-2026
+npm install alpinejs
+npm run build     # o npm run dev
+```
+
+### Archivos modificados o creados
+
+| Archivo | Rol |
+|---------|-----|
+| `resources/js/bootstrap.js` | Import + `Alpine.start()` |
+| `resources/js/app.js` | Importa bootstrap |
+| `resources/views/components/layout/layout.blade.php` | Flash `@session` + Alpine, toggle de prueba |
+| `package.json` | Dependencia `alpinejs` |
+
+### Evidencia
+
+![Alpine.js — toggle funcional y flash message en Idea](./img/ep27-alpine-toggle.png)
+
+### Problemas y soluciones
+
+Sin errores de implementación. Se usó `npm run build` para servir los assets compilados por Apache (evita la lentitud de `npm run dev` en la VM, documentada en el Ep. 25).
+
+### Comentarios personales
+
+Alpine cubre interactividad simple (toggles, flash, dropdowns) sin framework pesado. El flash auto-ocultable mejora el feedback tras registrarse. Se prefirió `npm run build` por la latencia de Vite en Vagrant.
+
+### Commit Git
+
+```bash
+cd ~/sites/laravel-from-scratch-2026
+git add .
+git commit -m "episodio-27: Alpine.js y flash message auto-ocultable"
+git push
+```
+
+```
+episodio-27: Alpine.js y flash message auto-ocultable
+```
+
+### Checklist — Ep. 27
+
+- [x] Alpine.js instalado y arrancado en `bootstrap.js`
+- [x] Prueba con toggle (`x-data`, `@click`, `x-show`)
+- [x] Flash `@session('success')` con auto-hide 3 s
+- [x] Evidencia `ep27-alpine-toggle.png`
+
+---
+
+## Episodios 28–30: Proyecto final (continuación)
 
 Documentar cada episodio del 23 al 30 siguiendo la plantilla de arriba. Temas principales:
 
@@ -1596,7 +1709,7 @@ Documentar cada episodio del 23 al 30 siguiendo la plantilla de arriba. Temas pr
 - **24:** Modelos Idea, Step, IdeaStatus, factories y tests — [ver Ep. 24](#episodio-24)
 - **25:** Tema Tailwind, componentes UI, registro/login — [ver Ep. 25](#episodio-25)
 - **26:** Browser tests de registro — [ver Ep. 26](#episodio-26)
-- **27:** Flash messages con Alpine.js
+- **27:** Flash messages con Alpine.js — [ver Ep. 27](#episodio-27)
 - **28:** Tarjetas de ideas y componentes x-card
 - **29:** Filtrado por estado con scopes Eloquent
 - **30:** Vista show de una idea individual

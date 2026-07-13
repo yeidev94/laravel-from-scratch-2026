@@ -20,8 +20,8 @@ class SessionsController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
+            'email' => ['required', 'email', 'max:255'],
+            'password' => ['required', 'max:255', 'min:8'],
         ]);
 
         if (! Auth::attempt($request->only('email', 'password'))) {
