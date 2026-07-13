@@ -102,6 +102,7 @@ Ver [estructura-proyectos.md](../estructura-proyectos.md).
 | `ep24-idea-test-pass.png` | 24 | `IdeaTest` PASS — `it belongs to a user` |
 | `ep25-register-form.png` | 25 | Registro en `lfts.local` + Vite + Network |
 | `ep25-register-dbeaver.png` | 25 | Registro funcional — usuario en BD (DBeaver) |
+| `ep26-browser-tests.png` | 26 | Browser tests register/login/logout/validación (inconcluso — VM lenta) |
 
 ## Evidencias obligatorias — Entregable 01
 

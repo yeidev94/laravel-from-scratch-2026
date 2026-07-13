@@ -6,7 +6,7 @@
 
         <div class="flex items-center gap-5">
             @guest
-                <a href="/login">Sign In In</a>
+                <a href="/login">Sign In</a>
                 <a href="/register" class="btn">Register</a>
             @endguest
 

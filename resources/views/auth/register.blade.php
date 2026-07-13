@@ -12,7 +12,7 @@
                 <x-form.field name="password" label="Password" type="password" />
             </div>
 
-            <button type="submit" class="btn mt-2 h-10">Create Account</button>
+            <button type="submit" class="btn mt-2 h-10" data-test="register-button">Create Account</button>
         </form>
     </x-form>
 </x-layout>

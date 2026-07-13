@@ -36,7 +36,7 @@ Ver [estructura-proyectos.md](./estructura-proyectos.md) para rutas, Apache, Git
 | 23 | Final Project Setup | Completado | [Episodio 23](#episodio-23) |
 | 24 | Design Your Model Layer | Completado | [Episodio 24](#episodio-24) |
 | 25 | Tailwind Theme Setup And Initial UI | Completado | [Episodio 25](#episodio-25) |
-| 26 | Browser Testing Registration Forms With Pest | Pendiente | — |
+| 26 | Browser Testing Registration Forms With Pest | Inconcluso | [Episodio 26](#episodio-26) |
 | 27 | Flash Messaging and Interactivity with AlpineJS | Pendiente | — |
 | 28 | Idea Cards | Pendiente | — |
 | 29 | Idea Filtering | Pendiente | — |
@@ -1425,14 +1425,177 @@ episodio-25: tema Tailwind, layout y vistas de registro/login
 
 ---
 
-## Episodios 26–30: Proyecto final (continuación)
+## Episodio 26: Browser Testing Registration Forms With Pest {#episodio-26}
+
+### Resumen
+
+Se escribieron **browser tests con Pest/Playwright** para los formularios de **registro**, **login** y **logout**, más un caso de **validación** (unhappy path). Los cuatro tests quedaron **creados** en `tests/Browser/RegisterTest.php`.
+
+**Estado: inconcluso** — igual que el Ep. 22, los browser tests son **muy lentos desde la máquina anfitriona** (Vagrant + Playwright). Los tests están escritos y listos; su ejecución completa no es práctica en este entorno.
+
+### Configuración — `tests/Pest.php`
+
+Carpeta `Browser` con `RefreshDatabase` y timeout ampliado; `Feature` aparte:
+
+```php
+pest()->browser()->timeout(60_000);
+
+pest()->extend(TestCase::class)
+    ->use(RefreshDatabase::class)
+    ->in('Browser');
+
+pest()->extend(TestCase::class)
+    ->in('Feature');
+```
+
+### Tests — `tests/Browser/RegisterTest.php`
+
+Helpers de Pest Laravel importados:
+
+```php
+use function Pest\Laravel\assertAuthenticated;
+use function Pest\Laravel\assertGuest;
+```
+
+**1. Registro (happy path):**
+
+```php
+it('registers a user', function () {
+    visit('/register')
+        ->fill('name', 'John Doe')
+        ->fill('email', 'john@example.com')
+        ->fill('password', 'password123')
+        ->click('@register-button')
+        ->assertPathIs('/');
+
+    assertAuthenticated();
+
+    $user = User::query()->findOrFail(Auth::id());
+
+    expect($user->toArray())->toMatchArray([
+        'name' => 'John Doe',
+        'email' => 'john@example.com',
+    ]);
+
+    $this->assertDatabaseHas('users', ['email' => 'john@example.com']);
+});
+```
+
+**2. Login (Arrange-Act-Assert):** crea el usuario primero porque `RefreshDatabase` deja la tabla vacía.
+
+```php
+it('logs in a user', function () {
+    User::factory()->create([
+        'email' => 'john@example.com',
+        'password' => 'password123',
+    ]);
+
+    visit('/login')
+        ->fill('email', 'john@example.com')
+        ->fill('password', 'password123')
+        ->click('@login-button')
+        ->assertPathIs('/');
+
+    assertAuthenticated();
+});
+```
+
+**3. Logout:**
+
+```php
+it('logs out a user', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    visit('/')->click('Log Out');
+
+    assertGuest();
+});
+```
+
+**4. Validación (unhappy path):** sin email → sigue en `/register`.
+
+```php
+it('requires a valid email address', function () {
+    visit('/register')
+        ->fill('name', 'John')
+        ->fill('password', 'password123')
+        ->click('@register-button')
+        ->assertPathIs('/register');
+});
+```
+
+Los selectores `@register-button` / `@login-button` mapean a `data-test="..."` en los botones, para no confundirse con enlaces del nav.
+
+### Comandos utilizados
+
+```bash
+composer require pestphp/pest-plugin-browser --dev
+npx playwright install
+vendor/bin/pest tests/Browser/RegisterTest.php
+```
+
+### Archivos modificados o creados
+
+| Archivo | Rol |
+|---------|-----|
+| `tests/Browser/RegisterTest.php` | 4 tests: registro, login, logout, validación |
+| `tests/Pest.php` | Carpeta `Browser` + `RefreshDatabase` + timeout 60 s |
+| `resources/views/auth/register.blade.php` | `data-test="register-button"` |
+| `resources/views/auth/login.blade.php` | `data-test="login-button"` |
+| `composer.json` / `package.json` | `pest-plugin-browser` + Playwright |
+
+### Evidencia
+
+![Browser tests de registro/login/logout/validación creados](./img/ep26-browser-tests.png)
+
+### Problemas y soluciones
+
+**Browser tests muy lentos desde el anfitrión.** Igual que en el Ep. 22, ejecutar Playwright dentro de Vagrant desde Windows es impracticable por la latencia. Los tests quedan **escritos y versionados** como evidencia del aprendizaje; no se ejecuta la suite completa en este entorno.
+
+| Problema | Solución / decisión |
+|----------|----------------------|
+| Lentitud de Playwright en VM | Dejar el episodio **inconcluso**; tests creados pero sin corrida completa |
+| `login` con BD vacía | `User::factory()->create()` antes de `visit('/login')` |
+| Click toma link del nav | `data-test` + selector `@...` |
+| Timeout por defecto 5 s | `pest()->browser()->timeout(60_000)` en `Pest.php` |
+
+### Comentarios personales
+
+Los browser tests aportan cobertura del flujo real de auth, pero el entorno Vagrant no los hace viables (mismo problema del Ep. 22). Se priorizó dejar los tests listos y avanzar. En una máquina más rápida o con SQLite en memoria correrían sin problema.
+
+### Commit Git
+
+```bash
+cd ~/sites/laravel-from-scratch-2026
+git add .
+git commit -m "episodio-26: browser tests de registro, login y logout (inconcluso — VM lenta)"
+git push
+```
+
+```
+episodio-26: browser tests de registro, login y logout (inconcluso — VM lenta)
+```
+
+### Checklist — Ep. 26
+
+- [x] Plugin `pest-plugin-browser` instalado
+- [x] Carpeta `Browser` + `Pest.php` con `RefreshDatabase` + timeout
+- [x] `RegisterTest` (registro, login, logout, validación)
+- [x] `data-test` en botones register/login
+- [x] Evidencia `ep26-browser-tests.png`
+- [ ] Ejecución completa de la suite *(no viable — VM lenta)*
+
+---
+
+## Episodios 27–30: Proyecto final (continuación)
 
 Documentar cada episodio del 23 al 30 siguiendo la plantilla de arriba. Temas principales:
 
 - **23:** Setup del repo, GitHub, herramientas (Pint, Rector, Boost) — [ver Ep. 23](#episodio-23)
 - **24:** Modelos Idea, Step, IdeaStatus, factories y tests — [ver Ep. 24](#episodio-24)
 - **25:** Tema Tailwind, componentes UI, registro/login — [ver Ep. 25](#episodio-25)
-- **26:** Browser tests de registro
+- **26:** Browser tests de registro — [ver Ep. 26](#episodio-26)
 - **27:** Flash messages con Alpine.js
 - **28:** Tarjetas de ideas y componentes x-card
 - **29:** Filtrado por estado con scopes Eloquent
