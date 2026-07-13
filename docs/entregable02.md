@@ -1285,10 +1285,84 @@ Documentar cada episodio del 23 al 30 siguiendo la plantilla de arriba. Temas pr
 
 ---
 
+## Forma de entrega — `entregable02.tar.gz`
+
+| Campo | Valor |
+|-------|-------|
+| **Archivo** | `entregable02.tar.gz` |
+| **Ubicación al generar** | `~/sites/entregable02.tar.gz` (VM) o `...\VMs\webserver\sites\entregable02.tar.gz` (host) |
+| **Contenido** | Carpeta `laravel-from-scratch-2026/` (código Ep. 23+, `docs/`, evidencias) |
+| **Excluir** | `vendor/` y `node_modules/` |
+
+### Comando (formato del profesor — VM)
+
+```bash
+cd ~/sites
+
+tar cvfz entregable02.tar.gz \
+  --exclude=laravel-from-scratch-2026/node_modules \
+  --exclude=laravel-from-scratch-2026/vendor \
+  laravel-from-scratch-2026/
+```
+
+Equivalente con llaves *(bash)*:
+
+```bash
+tar cvfz entregable02.tar.gz \
+  --exclude={laravel-from-scratch-2026/node_modules,laravel-from-scratch-2026/vendor} \
+  laravel-from-scratch-2026/
+```
+
+### Comando en Windows (host, PowerShell)
+
+```powershell
+cd C:\Users\yeide\isw811\VMs\webserver\sites
+
+tar -cvzf entregable02.tar.gz `
+  --exclude=./laravel-from-scratch-2026/node_modules `
+  --exclude=./laravel-from-scratch-2026/vendor `
+  ./laravel-from-scratch-2026
+```
+
+### Verificar antes de subir
+
+```bash
+# Listar contenido (primeras líneas)
+tar -tzf entregable02.tar.gz | head
+
+# Confirmar que NO hay vendor ni node_modules
+tar -tzf entregable02.tar.gz | grep -E 'vendor|node_modules' || echo "OK — excluidos"
+
+# Tamaño (~12 MB sin vendor; varía según docs/img)
+ls -lh entregable02.tar.gz
+```
+
+**Generado:** ~11.5 MB (`12028615` bytes) — incluye `docs/`, `.git`, código Laravel; **sin** `vendor/` ni `node_modules/`.
+
+El evaluador debe ejecutar `composer install` y `npm install` al descomprimir.
+
+### Opcional — incluir archivo Ep. 1–22 (`-old`)
+
+Si el docente pide también el CRUD de práctica (eps. 17–22 en `laravel-from-scratch-2026-old`):
+
+```bash
+cd ~/sites
+tar cvfz entregable02-completo.tar.gz \
+  --exclude=laravel-from-scratch-2026/node_modules \
+  --exclude=laravel-from-scratch-2026/vendor \
+  --exclude=laravel-from-scratch-2026-old/node_modules \
+  --exclude=laravel-from-scratch-2026-old/vendor \
+  laravel-from-scratch-2026/ laravel-from-scratch-2026-old/
+```
+
+> Usar **`entregable02.tar.gz`** (una carpeta) si el profesor no pidió lo contrario.
+
+---
+
 ## Checklist de cierre — Entregable 02
 
 - [ ] Episodios 17–30 completados y documentados
 - [ ] `php artisan test` ejecutado con evidencia
 - [ ] `php artisan queue:work` documentado cuando aplique
 - [ ] `npm run dev` / `npm run build` documentados
-- [ ] Archivo `entregable02.tar.gz` generado correctamente
+- [ ] Archivo `entregable02.tar.gz` generado correctamente *(ver [Forma de entrega](#forma-de-entrega--entregable02targz))*
