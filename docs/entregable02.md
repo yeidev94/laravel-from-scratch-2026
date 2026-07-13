@@ -38,7 +38,7 @@ Ver [estructura-proyectos.md](./estructura-proyectos.md) para rutas, Apache, Git
 | 25 | Tailwind Theme Setup And Initial UI | Completado | [Episodio 25](#episodio-25) |
 | 26 | Browser Testing Registration Forms With Pest | Inconcluso | [Episodio 26](#episodio-26) |
 | 27 | Flash Messaging and Interactivity with AlpineJS | Completado | [Episodio 27](#episodio-27) |
-| 28 | Idea Cards | Pendiente | — |
+| 28 | Idea Cards | En progreso | [Episodio 28](#episodio-28) |
 | 29 | Idea Filtering | Pendiente | — |
 | 30 | Show A Single Idea | Pendiente | — |
 
@@ -1701,7 +1701,202 @@ episodio-27: Alpine.js y flash message auto-ocultable
 
 ---
 
-## Episodios 28–30: Proyecto final (continuación)
+## Episodio 28: Idea Cards {#episodio-28}
+
+### Resumen
+
+Se muestra el **listado de ideas** del usuario autenticado como **tarjetas** (cards) en un grid. Se crea la ruta `/ideas`, el `IdeaController@index`, la vista `ideas/index`, y se extraen dos componentes Blade reutilizables: **`x-card`** y **`x-idea.status-label`** (pill de estado con color dinámico según `IdeaStatus`).
+
+### Paso 1 — Rutas
+
+`/` redirige a `/ideas`; `/ideas` requiere auth y usa un controlador resource. La ruta de login necesita **nombre** (`login`) porque el middleware `auth` redirige a `route('login')`.
+
+```php
+use App\Http\Controllers\IdeaController;
+
+Route::get('/', fn () => redirect('/ideas'));
+
+Route::middleware('guest')->group(function () {
+    Route::get('/register', [RegisteredUserController::class, 'create']);
+    Route::post('/register', [RegisteredUserController::class, 'store']);
+    Route::get('/login', [SessionsController::class, 'create'])->name('login');
+    Route::post('/login', [SessionsController::class, 'store']);
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/ideas', [IdeaController::class, 'index']);
+    Route::get('/ideas/{idea}', [IdeaController::class, 'show'])->name('ideas.show');
+});
+
+Route::post('/logout', [SessionsController::class, 'destroy'])->middleware('auth');
+```
+
+### Paso 2 — `IdeaController@index`
+
+Ideas **scoped al usuario** vía la relación (no `Idea::all()`):
+
+```php
+public function index()
+{
+    return view('ideas.index', [
+        'ideas' => auth()->user()->ideas,
+    ]);
+}
+```
+
+### Paso 3 — Vista `resources/views/ideas/index.blade.php`
+
+Header + grid + `@forelse`:
+
+```blade
+<x-layout title="Ideas">
+    <div>
+        <header class="text-center">
+            <h1 class="text-2xl font-bold">Your Ideas</h1>
+            <p class="text-muted-foreground">Track and manage your ideas.</p>
+        </header>
+
+        <div class="mt-6 grid lg:grid-cols-2 gap-4">
+            @forelse ($ideas as $idea)
+                <x-card href="/ideas/{{ $idea->id }}">
+                    <h3 class="text-lg text-foreground">{{ $idea->title }}</h3>
+
+                    <div class="mt-1">{{ $idea->description }}</div>
+
+                    <x-idea.status-label :status="$idea->status" class="mt-2" />
+
+                    <div class="mt-2">{{ $idea->created_at->diffForHumans() }}</div>
+                </x-card>
+            @empty
+                <p>No ideas at this time.</p>
+            @endforelse
+        </div>
+    </div>
+</x-layout>
+```
+
+### Paso 4 — Componente `x-card` — `components/card.blade.php`
+
+Se extrae la tarjeta a componente; como es clickeable se usa `<a>`:
+
+```blade
+<a {{ $attributes->merge(['class' => 'block border border-border rounded-lg bg-card p-4 text-sm text-muted-foreground']) }}>
+    {{ $slot }}
+</a>
+```
+
+### Paso 5 — Componente `x-idea.status-label` — `components/idea/status-label.blade.php`
+
+Pill con color según el estado. `@props` con default `pending`:
+
+```blade
+@props(['status' => \App\IdeaStatus::Pending])
+
+@php
+    $classes = 'inline-block rounded-full text-xs font-medium px-2 py-0.5 border';
+
+    $classes .= match ($status) {
+        \App\IdeaStatus::Pending    => ' bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
+        \App\IdeaStatus::InProgress => ' bg-blue-500/10 text-blue-500 border-blue-500/20',
+        \App\IdeaStatus::Completed  => ' bg-primary/10 text-primary border-primary/20',
+    };
+@endphp
+
+<span {{ $attributes->merge(['class' => $classes]) }}>
+    {{ $status->label() }}
+</span>
+```
+
+### Paso 6 — Datos de prueba (Tinker)
+
+```bash
+php artisan tinker
+>>> App\Models\Idea::factory()->create(['user_id' => 8]);   // tu user_id
+>>> App\Models\Idea::factory(3)->create(['user_id' => 8]);
+```
+
+Ajustar estados en BD (DBeaver) para ver los tres colores: `pending`, `in-progress`, `completed`.
+
+### Conceptos clave
+
+| Elemento | Uso |
+|----------|-----|
+| `redirect('/ideas')` en `/` | Homepage temporal |
+| `->name('login')` | El middleware `auth` redirige a `route('login')` |
+| `auth()->user()->ideas` | Query scoped al usuario (seguridad) |
+| `@forelse / @empty` | Listado con fallback vacío |
+| `diffForHumans()` | Timestamp legible (Carbon) |
+| `$attributes->merge()` | Clases del componente sobreescribibles |
+| `match ($status)` | Color del pill según enum |
+
+### Comandos utilizados
+
+```bash
+php artisan make:controller IdeaController --resource
+php artisan tinker     # crear ideas de prueba
+npm run build          # o npm run dev
+```
+
+### Archivos modificados o creados
+
+| Archivo | Rol |
+|---------|-----|
+| `routes/web.php` | `/` → `/ideas`, ruta index/show, login nombrada |
+| `app/Http/Controllers/IdeaController.php` | `index()` con ideas del usuario |
+| `resources/views/ideas/index.blade.php` | Grid de tarjetas |
+| `resources/views/components/card.blade.php` | Componente `x-card` |
+| `resources/views/components/idea/status-label.blade.php` | Pill de estado |
+
+### Evidencia
+
+*[Pendiente — capturas al implementar en la VM.]*
+
+| Captura sugerida | Archivo |
+|------------------|---------|
+| Grid de tarjetas en `/ideas` | `ep28-idea-cards.png` |
+| Pills de estado (pending/in-progress/completed) | `ep28-status-labels.png` |
+
+### Problemas y soluciones
+
+| Problema | Solución |
+|----------|----------|
+| `Route [login] not defined` | Nombrar la ruta login: `->name('login')` |
+| Estilos sin cargar | Correr `npm run dev` / `npm run build` |
+| Ideas de otros usuarios | Usar `auth()->user()->ideas`, no `Idea::all()` |
+| Pill sin color | `match` debe cubrir los 3 casos del enum |
+
+### Comentarios personales
+
+*[Completar tras implementar en VM.]*
+
+### Commit Git
+
+```bash
+cd ~/sites/laravel-from-scratch-2026
+git add .
+git commit -m "episodio-28: tarjetas de ideas, x-card y status-label"
+git push
+```
+
+```
+episodio-28: tarjetas de ideas, x-card y status-label
+```
+
+### Checklist — Ep. 28
+
+- [ ] Ruta `/` → `/ideas` y ruta index/show
+- [ ] Login nombrada (`->name('login')`)
+- [ ] `IdeaController@index` con `auth()->user()->ideas`
+- [ ] Vista `ideas/index` con grid + `@forelse`
+- [ ] Componente `x-card`
+- [ ] Componente `x-idea.status-label` con color dinámico
+- [ ] Ideas de prueba en BD
+- [ ] Capturas `ep28-*.png`
+- [ ] Commit `episodio-28: ...`
+
+---
+
+## Episodios 29–30: Proyecto final (continuación)
 
 Documentar cada episodio del 23 al 30 siguiendo la plantilla de arriba. Temas principales:
 
@@ -1710,7 +1905,7 @@ Documentar cada episodio del 23 al 30 siguiendo la plantilla de arriba. Temas pr
 - **25:** Tema Tailwind, componentes UI, registro/login — [ver Ep. 25](#episodio-25)
 - **26:** Browser tests de registro — [ver Ep. 26](#episodio-26)
 - **27:** Flash messages con Alpine.js — [ver Ep. 27](#episodio-27)
-- **28:** Tarjetas de ideas y componentes x-card
+- **28:** Tarjetas de ideas y componentes x-card — [ver Ep. 28](#episodio-28)
 - **29:** Filtrado por estado con scopes Eloquent
 - **30:** Vista show de una idea individual
 

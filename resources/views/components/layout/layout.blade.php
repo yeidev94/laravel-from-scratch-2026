@@ -25,7 +25,7 @@
             x-init="setTimeout(() => show = false, 3000)"
             x-show="show"
             x-transition:enter="transition ease-out duration-300"
-            class="bg-blue-500 text-white p-4 rounded-md"
+            class="fixed bottom-4 left-4 right-4 z-50 rounded-xl border border-primary/30 bg-card px-4 py-3 text-sm text-foreground shadow-lg sm:left-auto sm:right-6 sm:max-w-sm md:bottom-6 md:px-5 md:py-4 md:text-base"
             >
 
             {{ $value }}

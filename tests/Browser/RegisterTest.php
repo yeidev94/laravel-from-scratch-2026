@@ -12,7 +12,7 @@ it('registers a user', function () {
         ->fill('email', 'john@example.com')
         ->fill('password', 'password123')
         ->click('@register-button')
-        ->assertPathIs('/');
+        ->assertPathIs('/ideas');
 
     assertAuthenticated();
 
@@ -38,7 +38,7 @@ it('logs in a user', function () {
         ->fill('email', 'john@example.com')
         ->fill('password', 'password123')
         ->click('@login-button')
-        ->assertPathIs('/');
+        ->assertPathIs('/ideas');
 
     assertAuthenticated();
 });

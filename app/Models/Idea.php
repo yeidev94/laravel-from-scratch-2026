@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\IdeaStatusCast;
 use App\IdeaStatus;
 use App\Models\Step;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,11 +18,11 @@ class Idea extends Model
 
     protected $casts = [
         'links' => AsArrayObject::class,
-        'status' => IdeaStatus::class,
+        'status' => IdeaStatusCast::class,
     ];
 
     protected $attributes = [
-        'status' => IdeaStatus::Pending,
+        'status' => IdeaStatus::Pending->value,
     ];
 
     public function user(): BelongsTo

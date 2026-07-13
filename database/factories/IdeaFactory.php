@@ -22,8 +22,9 @@ class IdeaFactory extends Factory
         return [
             'title' => fake()->sentence(),
             'description' => fake()->paragraph(),
-            'links' => fake()->url(),
+            'links' => [fake()->url()],
             'image_path' => fake()->imageUrl(),
+            'status' => fake()->randomElement(IdeaStatus::cases())->value,
             'user_id' => User::factory(),
         ];
     }
